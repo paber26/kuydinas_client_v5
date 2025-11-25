@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kuy Dinas - Dashboard User</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-50">
+    <div id="app"></div>
+
+    <script type="module" src="/src/main.js"></script>
+
+    <!-- <script>
+      (function () {
+        const sidebar = document.getElementById("sidebar");
+        const toggle = document.getElementById("sidebar-toggle");
+        const backdrop = document.getElementById("sidebar-backdrop");
+
+        if (!sidebar || !toggle || !backdrop) return;
+
+        function openSidebar() {
+          sidebar.classList.remove("-translate-x-full");
+          sidebar.classList.add("translate-x-0");
+          backdrop.classList.remove("hidden");
+        }
+
+        function closeSidebar() {
+          sidebar.classList.add("-translate-x-full");
+          sidebar.classList.remove("translate-x-0");
+          backdrop.classList.add("hidden");
+        }
+
+        toggle.addEventListener("click", function () {
+          if (sidebar.classList.contains("-translate-x-full")) {
+            openSidebar();
+          } else {
+            closeSidebar();
+          }
+        });
+
+        backdrop.addEventListener("click", closeSidebar);
+
+        window.addEventListener("resize", function () {
+          if (window.innerWidth >= 768) {
+            sidebar.classList.remove("-translate-x-full");
+            sidebar.classList.add("translate-x-0");
+            backdrop.classList.add("hidden");
+          } else {
+            sidebar.classList.add("-translate-x-full");
+            sidebar.classList.remove("translate-x-0");
+          }
+        });
+      })();
+    </script> -->
+  </body>
+</html>
