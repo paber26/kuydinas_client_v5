@@ -1,27 +1,65 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-// Import halaman yang mau dipakai
-import Dashboard from "../components/Dashboard.vue";
-import Tryoutskd from "../components/Tryoutskd.vue";
-import DaftarAkun from "../components/Daftarakun.vue";
-import Materiskd from "../components/Materiskd.vue";
-import Axiostest from "../components/Axiostest.vue";
-import Tryoutskdlihat from "../components/Tryoutskdlihat.vue";
-
-// Daftar route
 const routes = [
-  { path: "/", component: Dashboard },
-  { path: "/tryoutskd", component: Tryoutskd },
-  { path: "/daftarakun", component: DaftarAkun },
-  { path: "/materiskd", component: Materiskd },
-  { path: "/axiostest", component: Axiostest },
-  { path: "/tryoutskd/lihat/:eid", component: Tryoutskdlihat },
+  {
+    path: "/",
+    component: () => import("../layout/DashboardLayout.vue"),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: "dashboard",
+        name: "dashboard",
+        component: () => import("../views/Dashboard/Dashboard.vue"),
+      },
+      {
+        path: "materiskd",
+        name: "materiskd",
+        component: () => import("../views/MateriSkd/Materiskd.vue"),
+      },
+      {
+        path: "promotryout",
+        name: "promotryout",
+        component: () => import("../views/PromoTryout/Promotryout.vue"),
+      },
+    ],
+  },
+  {
+    path: "/",
+    component: () => import("../layout/AuthLayout.vue"),
+    children: [
+      {
+        path: "login",
+        name: "login",
+        component: () => import("../views/Auth/Login.vue"),
+      },
+      {
+        path: "register",
+        name: "register",
+        component: () => import("../views/Auth/Register.vue"),
+      },
+      {
+        path: "auth/google/callback",
+        name: "google-callback",
+        component: () => import("../views/Auth/GoogleCallback.vue"),
+      },
+    ],
+  },
 ];
 
-// Buat router
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+// AUTH GUARD
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("token");
+
+  if (to.meta.requiresAuth && !token) {
+    next("/login");
+  } else {
+    next();
+  }
 });
 
 export default router;
