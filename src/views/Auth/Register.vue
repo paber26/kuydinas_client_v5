@@ -3,6 +3,10 @@
     <div class="bg-white shadow-lg rounded-xl w-full max-w-md p-8">
       <h1 class="text-2xl font-bold text-center mb-6">Register</h1>
 
+      <p v-if="error" class="text-red-500 text-sm text-center mb-4">
+        {{ error }}
+      </p>
+
       <form @submit.prevent="register" class="space-y-4">
         <div>
           <label class="text-sm">Nama</label>
@@ -34,10 +38,21 @@
           />
         </div>
 
+        <div>
+          <label class="text-sm">Confirm Password</label>
+          <input
+            v-model="confirmPassword"
+            type="password"
+            class="w-full border rounded-lg px-3 py-2 mt-1"
+            required
+          />
+        </div>
+
         <button
-          class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+          :disabled="loading"
+          class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
         >
-          Register
+          {{ loading ? "Registering..." : "Register" }}
         </button>
       </form>
 
@@ -59,8 +74,20 @@ const router = useRouter();
 const name = ref("");
 const email = ref("");
 const password = ref("");
+const confirmPassword = ref("");
+const loading = ref(false);
+const error = ref("");
 
 const register = async () => {
+  error.value = "";
+
+  if (password.value !== confirmPassword.value) {
+    error.value = "Password tidak sama";
+    return;
+  }
+
+  loading.value = true;
+
   try {
     await api.post("/user/register", {
       name: name.value,
@@ -70,7 +97,9 @@ const register = async () => {
 
     router.push("/login");
   } catch (err) {
-    alert("Register gagal");
+    error.value = err.response?.data?.message || "Register gagal";
+  } finally {
+    loading.value = false;
   }
 };
 </script>

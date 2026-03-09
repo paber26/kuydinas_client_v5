@@ -7,6 +7,10 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       {
+        path: "",
+        redirect: "/dashboard",
+      },
+      {
         path: "dashboard",
         name: "dashboard",
         component: () => import("../views/Dashboard/Dashboard.vue"),
@@ -44,6 +48,10 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: "/dashboard",
+  },
 ];
 
 const router = createRouter({
@@ -55,11 +63,17 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
 
+  // if route requires auth but user not logged in
   if (to.meta.requiresAuth && !token) {
-    next("/login");
-  } else {
-    next();
+    return next("/login");
   }
+
+  // if already logged in but accessing login/register
+  if (token && (to.path === "/login" || to.path === "/register")) {
+    return next("/dashboard");
+  }
+
+  next();
 });
 
 export default router;

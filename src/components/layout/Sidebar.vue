@@ -122,6 +122,7 @@
     <!-- Logout -->
     <div class="px-3 pb-4 pt-2 border-t border-slate-100">
       <button
+        @click="logout"
         class="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition"
       >
         <LogOut class="w-5 h-5" />
@@ -133,6 +134,8 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import api from "../../services/api";
 
 import {
   Home,
@@ -145,6 +148,7 @@ import {
 } from "lucide-vue-next";
 
 const open = ref(false);
+const router = useRouter();
 
 const toggleSidebar = () => {
   open.value = !open.value;
@@ -157,4 +161,28 @@ onMounted(() => {
     btn.addEventListener("click", toggleSidebar);
   }
 });
+
+const logout = async () => {
+  const token = localStorage.getItem("token");
+
+  try {
+    await api.post(
+      "/user/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+  } catch (err) {
+    // Ignore 401 errors because token might already be invalid
+    if (err?.response?.status !== 401) {
+      console.error(err);
+    }
+  }
+
+  localStorage.removeItem("token");
+  router.push("/login");
+};
 </script>
