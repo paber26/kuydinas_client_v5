@@ -1,243 +1,354 @@
 <template>
-  <!-- Content -->
-  <main class="p-6">
-    <!-- KPI Cards -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-        <div class="flex items-center justify-between">
+  <!-- CONTENT -->
+  <main class="flex-1 overflow-y-auto">
+    <div class="max-w-6xl mx-auto px-6 py-6 space-y-6">
+      <!-- Greeting & CTA -->
+      <section
+        class="rounded-2xl bg-white shadow-sm border border-slate-100 p-5"
+      >
+        <div
+          class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+        >
           <div>
-            <div class="text-xs text-slate-400">Pengguna Aktif</div>
-            <div class="text-2xl font-semibold">1,248</div>
+            <p class="text-xs text-slate-500">Selamat datang kembali,</p>
+            <h2 class="text-2xl font-semibold text-slate-800">Aldo 👋</h2>
+            <p class="mt-2 text-sm text-slate-600 max-w-xl">
+              Website Kuy Dinas menyediakan try out SKD yang dapat diakses
+              secara
+              <span class="font-semibold">gratis</span> maupun
+              <span class="font-semibold">premium</span>. Ayo lanjutkan
+              latihanmu hari ini!
+            </p>
+            <div class="mt-4 flex flex-wrap gap-3">
+              <button
+                class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-emerald-600 transition"
+              >
+                🚀 Mulai Tryout
+              </button>
+              <button
+                class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 transition"
+              >
+                📚 Lihat Materi SKD
+              </button>
+            </div>
           </div>
-          <div class="p-2 bg-emerald-100 rounded-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-emerald-600"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 12h14M12 5l7 7-7 7"
-              />
-            </svg>
+          <div
+            class="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3 w-full md:w-64"
+          >
+            <p class="text-xs text-slate-500 mb-1">Info singkat</p>
+            <ul class="text-xs text-slate-600 space-y-1">
+              <li>• Tryout terakhir: Paket Premium 1</li>
+              <li>• Nilai terakhir: <span class="font-semibold">345</span></li>
+              <li>• Passing grade: <span class="font-semibold">311</span></li>
+              <li>
+                • Status:
+                <span class="text-emerald-600 font-semibold">Lulus ✅</span>
+              </li>
+            </ul>
           </div>
         </div>
-        <div class="text-xs text-slate-400 mt-3">+3.2% dari minggu lalu</div>
-      </div>
+      </section>
 
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-xs text-slate-400">Tryout Hari Ini</div>
-            <div class="text-2xl font-semibold">24</div>
-          </div>
-          <div class="p-2 bg-indigo-100 rounded-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-indigo-600"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3"
-              />
-            </svg>
-          </div>
-        </div>
-        <div class="text-xs text-slate-400 mt-3">+1.1% dari kemarin</div>
-      </div>
+      <!-- GRID: kiri (besar) + kanan -->
+      <div class="grid gap-6 lg:grid-cols-3">
+        <!-- KIRI -->
+        <div class="space-y-6 lg:col-span-2">
+          <!-- Tryout Terakhir -->
+          <section
+            class="rounded-2xl bg-white p-5 shadow-sm border border-slate-100"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p
+                  class="text-xs font-semibold uppercase tracking-wide text-emerald-600"
+                >
+                  Tryout terakhir
+                </p>
+                <h3 class="mt-1 text-lg font-semibold text-slate-800">
+                  Tryout SKD CPNS Paket Premium 1
+                </h3>
+                <p class="mt-1 text-xs text-slate-500">
+                  Dikerjakan pada 24 November 2025 • 110 soal
+                </p>
+              </div>
+              <div class="text-right">
+                <p class="text-[11px] uppercase tracking-wide text-slate-400">
+                  Nilai kamu
+                </p>
+                <p class="text-2xl font-bold text-emerald-600">345</p>
+                <p class="text-[11px] text-slate-500">
+                  Passing grade: <span class="font-semibold">311</span>
+                </p>
+              </div>
+            </div>
 
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-xs text-slate-400">Pendaftar Baru</div>
-            <div class="text-2xl font-semibold">312</div>
-          </div>
-          <div class="p-2 bg-yellow-100 rounded-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-yellow-600"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 12h14"
-              />
-            </svg>
-          </div>
-        </div>
-        <div class="text-xs text-slate-400 mt-3">+8.6% bulan ini</div>
-      </div>
+            <!-- Progress -->
+            <div class="mt-4">
+              <div class="flex justify-between text-xs text-slate-500 mb-1">
+                <span>Progres kelulusan</span>
+                <span>111%</span>
+              </div>
+              <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  class="h-full rounded-full bg-emerald-500"
+                  style="width: 100%"
+                ></div>
+              </div>
+              <p class="mt-2 text-xs text-slate-500">
+                Mantap! Kamu sudah melewati passing grade. Pertahankan dan
+                tingkatkan lagi 💪
+              </p>
+            </div>
 
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-xs text-slate-400">Pendapatan</div>
-            <div class="text-2xl font-semibold">Rp 18,450,000</div>
-          </div>
-          <div class="p-2 bg-pink-100 rounded-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-pink-600"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 3v18h18"
-              />
-            </svg>
-          </div>
-        </div>
-        <div class="text-xs text-slate-400 mt-3">+12.4% bulan lalu</div>
-      </div>
-    </section>
+            <div class="mt-4 flex flex-wrap gap-3">
+              <button
+                class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 transition"
+              >
+                ▶️ Ulangi Tryout
+              </button>
+              <button
+                class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 transition"
+              >
+                📖 Lihat Pembahasan
+              </button>
+            </div>
+          </section>
 
-    <!-- Section: Kuis Terakhir -->
-    <section
-      class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6"
-    >
-      <h3 class="font-semibold mb-3">Kuis Terakhir Dikerjakan</h3>
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="text-sm text-slate-500">Nama Kuis</div>
-          <div class="text-lg font-semibold">Tes Pengetahuan Umum 2025</div>
-          <div class="text-xs text-slate-400 mt-1">
-            Dikerjakan: 20 November 2025
-          </div>
-        </div>
-        <div class="text-right">
-          <div class="text-sm text-slate-500">Nilai</div>
-          <div class="text-3xl font-bold text-indigo-600">87</div>
-        </div>
-      </div>
-    </section>
+          <!-- Jalur Belajar -->
+          <section
+            class="rounded-2xl bg-white p-5 shadow-sm border border-slate-100"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-base font-semibold text-slate-800">
+                  Jalur Belajar SKD Kamu
+                </h3>
+                <p class="mt-1 text-xs text-slate-500">
+                  Ikuti rekomendasi materi berdasarkan nilai tryout kamu.
+                </p>
+              </div>
+              <button class="text-xs text-emerald-600 hover:underline">
+                Lihat semua materi
+              </button>
+            </div>
 
-    <!-- Section: Sedang Mengerjakan -->
-    <section
-      class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6"
-    >
-      <h3 class="font-semibold mb-3">Sedang Mengerjakan</h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="text-slate-500 text-xs text-left bg-slate-50">
-            <tr>
-              <th class="py-3 pr-6">Nama Akun</th>
-              <th class="py-3 pr-6">Try Out</th>
-              <th class="py-3 pr-6">Jumlah Koin</th>
-              <th class="py-3 pr-6">Jam Mulai</th>
-            </tr>
-          </thead>
-          <tbody class="text-slate-700 bg-white">
-            <tr class="border-t">
-              <td class="py-3 flex items-center gap-3">
-                <img
-                  src="../mnt/data/ADCD5DD8-A0A1-4C40-A2D9-63D9E2449E55.jpeg"
-                  alt="avatar Robert Clinton"
-                  class="w-9 h-9 rounded-full"
-                />
+            <div class="mt-4 space-y-3">
+              <!-- modul 1 -->
+              <div
+                class="rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3 flex items-center justify-between gap-3"
+              >
                 <div>
-                  <div class="font-medium">Robert Clinton</div>
-                  <div class="text-xs text-slate-400">ID: 2381</div>
+                  <p class="text-sm font-medium text-slate-800">
+                    TWK - Wawasan Kebangsaan
+                    <span
+                      class="ml-2 inline-flex items-center rounded-full px-2 py-[2px] text-[10px] font-medium bg-amber-100 text-amber-700"
+                    >
+                      Sedang
+                    </span>
+                  </p>
+                  <p class="text-xs text-slate-500">
+                    Perkuat materi Pancasila, UUD 1945, dan NKRI.
+                  </p>
+                  <div class="mt-2">
+                    <div
+                      class="flex justify-between text-[10px] text-slate-500 mb-1"
+                    >
+                      <span>Progres materi</span>
+                      <span>60%</span>
+                    </div>
+                    <div
+                      class="h-1.5 w-full rounded-full bg-slate-200 overflow-hidden"
+                    >
+                      <div
+                        class="h-full rounded-full bg-emerald-500"
+                        style="width: 60%"
+                      ></div>
+                    </div>
+                  </div>
                 </div>
-              </td>
-              <td class="py-3">Samsung</td>
-              <td class="py-3">$38,536</td>
-              <td class="py-3">Smart Phone</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+                <button
+                  class="shrink-0 rounded-xl bg-white px-3 py-2 text-xs font-medium text-emerald-600 border border-emerald-100 hover:bg-emerald-50 transition"
+                >
+                  Mulai
+                </button>
+              </div>
 
-    <!-- Table / Management -->
-    <section class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="font-semibold">Manajemen Tryout Terbaru</h3>
-        <div class="flex items-center gap-2">
-          <button class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm">
-            Buat Tryout
-          </button>
-          <button class="px-3 py-2 border rounded-lg text-sm">Impor CSV</button>
+              <!-- modul 2 -->
+              <div
+                class="rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3 flex items-center justify-between gap-3"
+              >
+                <div>
+                  <p class="text-sm font-medium text-slate-800">
+                    TIU - Penalaran Logis
+                    <span
+                      class="ml-2 inline-flex items-center rounded-full px-2 py-[2px] text-[10px] font-medium bg-rose-100 text-rose-700"
+                    >
+                      Lemah
+                    </span>
+                  </p>
+                  <p class="text-xs text-slate-500">
+                    Latihan soal deret angka, silogisme, dan analisis.
+                  </p>
+                  <div class="mt-2">
+                    <div
+                      class="flex justify-between text-[10px] text-slate-500 mb-1"
+                    >
+                      <span>Progres materi</span>
+                      <span>25%</span>
+                    </div>
+                    <div
+                      class="h-1.5 w-full rounded-full bg-slate-200 overflow-hidden"
+                    >
+                      <div
+                        class="h-full rounded-full bg-emerald-500"
+                        style="width: 25%"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="shrink-0 rounded-xl bg-white px-3 py-2 text-xs font-medium text-emerald-600 border border-emerald-100 hover:bg-emerald-50 transition"
+                >
+                  Mulai
+                </button>
+              </div>
+
+              <!-- modul 3 -->
+              <div
+                class="rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3 flex items-center justify-between gap-3"
+              >
+                <div>
+                  <p class="text-sm font-medium text-slate-800">
+                    TKP - Pelayanan Publik
+                    <span
+                      class="ml-2 inline-flex items-center rounded-full px-2 py-[2px] text-[10px] font-medium bg-emerald-100 text-emerald-700"
+                    >
+                      Kuat
+                    </span>
+                  </p>
+                  <p class="text-xs text-slate-500">
+                    Pertahankan nilai TKP-mu dengan mengulang simulasi kasus.
+                  </p>
+                  <div class="mt-2">
+                    <div
+                      class="flex justify-between text-[10px] text-slate-500 mb-1"
+                    >
+                      <span>Progres materi</span>
+                      <span>80%</span>
+                    </div>
+                    <div
+                      class="h-1.5 w-full rounded-full bg-slate-200 overflow-hidden"
+                    >
+                      <div
+                        class="h-full rounded-full bg-emerald-500"
+                        style="width: 80%"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="shrink-0 rounded-xl bg-white px-3 py-2 text-xs font-medium text-emerald-600 border border-emerald-100 hover:bg-emerald-50 transition"
+                >
+                  Mulai
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- KANAN -->
+        <div class="space-y-6">
+          <!-- Statistik -->
+          <section
+            class="rounded-2xl bg-white p-4 shadow-sm border border-slate-100"
+          >
+            <h3 class="text-sm font-semibold text-slate-800 mb-3">
+              Statistik Belajar
+            </h3>
+            <div
+              class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3"
+            >
+              <div class="rounded-xl bg-slate-50 px-3 py-3">
+                <p class="text-[11px] text-slate-500">
+                  Total tryout dikerjakan
+                </p>
+                <p class="mt-1 text-xl font-semibold text-slate-800">8</p>
+              </div>
+              <div class="rounded-xl bg-slate-50 px-3 py-3">
+                <p class="text-[11px] text-slate-500">Rata-rata nilai</p>
+                <p class="mt-1 text-xl font-semibold text-slate-800">312</p>
+              </div>
+              <div class="rounded-xl bg-slate-50 px-3 py-3">
+                <p class="text-[11px] text-slate-500">Peringkat SKD</p>
+                <p class="mt-1 text-xl font-semibold text-slate-800">Top 12%</p>
+              </div>
+            </div>
+            <p class="mt-3 text-[11px] text-slate-500">
+              Peringkat dihitung dari seluruh peserta Kuy Dinas yang mengikuti
+              tryout.
+            </p>
+          </section>
+
+          <!-- Promo -->
+          <section
+            class="rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 p-4 text-white shadow-sm"
+          >
+            <p
+              class="inline-flex items-center rounded-full bg-white/15 px-2 py-[2px] text-[11px] font-medium mb-2"
+            >
+              🔥 Promo Try Out
+            </p>
+            <h3 class="text-base font-semibold">
+              Diskon hingga 50% paket premium
+            </h3>
+            <p class="mt-1 text-xs text-emerald-50">
+              Akses semua tryout SKD + pembahasan lengkap dan analisis nilai.
+            </p>
+            <ul class="mt-3 space-y-1 text-xs text-emerald-50">
+              <li>• Paket Harian: mulai 5.000 koin</li>
+              <li>• Paket 7 Hari Intensif</li>
+              <li>• Paket Sampai Lulus SKD</li>
+            </ul>
+            <button
+              class="mt-4 w-full rounded-xl bg-white/95 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-white transition"
+            >
+              Lihat semua promo
+            </button>
+          </section>
+
+          <!-- Hubungi Admin -->
+          <section
+            class="rounded-2xl bg-white p-4 shadow-sm border border-rose-100"
+          >
+            <div class="flex items-start gap-3">
+              <div
+                class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-lg"
+              >
+                💬
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-slate-800">
+                  Hubungi Admin apabila ada kendala
+                </h3>
+                <p class="mt-1 text-xs text-slate-500">
+                  Jika ada masalah pembayaran, error tryout, atau pertanyaan
+                  lainnya, kamu bisa langsung menghubungi admin melalui
+                  WhatsApp.
+                </p>
+                <a
+                  href="#"
+                  class="mt-3 inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-600 transition"
+                >
+                  WhatsApp Admin
+                </a>
+                <p class="mt-2 text-[11px] text-slate-400">
+                  Fast response di jam 08.00–21.00 WIB.
+                </p>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="text-slate-500 text-xs text-left">
-            <tr>
-              <th class="py-3 pr-6">#</th>
-              <th class="py-3 pr-6">Nama Tryout</th>
-              <th class="py-3 pr-6">Tanggal</th>
-              <th class="py-3 pr-6">Peserta</th>
-              <th class="py-3 pr-6">Status</th>
-              <th class="py-3 pr-6">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="text-slate-700">
-            <tr class="border-t">
-              <td class="py-3">1</td>
-              <td class="py-3">Tryout SKD CPNS 2026</td>
-              <td class="py-3">2026-01-12</td>
-              <td class="py-3">1,024</td>
-              <td class="py-3">
-                <span
-                  class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs"
-                  >Publik</span
-                >
-              </td>
-              <td class="py-3">
-                <button class="text-sm text-indigo-600">Kelola</button>
-              </td>
-            </tr>
-            <tr class="border-t">
-              <td class="py-3">2</td>
-              <td class="py-3">Tryout Seleksi Sekolah Kedinasan</td>
-              <td class="py-3">2025-12-05</td>
-              <td class="py-3">432</td>
-              <td class="py-3">
-                <span
-                  class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs"
-                  >Draft</span
-                >
-              </td>
-              <td class="py-3">
-                <button class="text-sm text-indigo-600">Kelola</button>
-              </td>
-            </tr>
-            <tr class="border-t">
-              <td class="py-3">3</td>
-              <td class="py-3">Tryout Materi Tes Bahasa</td>
-              <td class="py-3">2025-11-10</td>
-              <td class="py-3">88</td>
-              <td class="py-3">
-                <span
-                  class="px-2 py-1 rounded-full bg-pink-100 text-pink-700 text-xs"
-                  >Selesai</span
-                >
-              </td>
-              <td class="py-3">
-                <button class="text-sm text-indigo-600">Kelola</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+    </div>
   </main>
 </template>
