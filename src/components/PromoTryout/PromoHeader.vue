@@ -25,7 +25,7 @@
       >
         <p class="font-semibold">🎯 {{ summary.total }} paket aktif</p>
         <p class="text-[11px] text-slate-500">
-          {{ summary.free }} gratis • {{ summary.discount }} diskon
+          {{ summary.free }} gratis • {{ summary.discountPremium }} diskon
         </p>
       </div>
 

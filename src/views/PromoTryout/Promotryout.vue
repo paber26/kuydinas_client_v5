@@ -57,7 +57,7 @@ const fetchTryouts = async () => {
         duration: t.duration || 100,
         questionCount: t.questionCount,
         level: t.level || "Menengah",
-        seatsLeft: t.quota || 999,
+        seatsLeft: Number(t.quota ?? t.qouta ?? t.seatsLeft ?? 0),
         discount: Number(t.discount || 0),
         highlight: false,
         tag: t.tag,
@@ -84,9 +84,16 @@ const selectedFilter = ref("semua");
 
 const summary = computed(() => {
   const total = tryoutPackages.value.length;
-  const free = tryoutPackages.value.filter((p) => p.isFree).length;
-  const discount = tryoutPackages.value.filter((p) => p.discount).length;
-  return { total, free, discount };
+
+  // paket gratis
+  const free = tryoutPackages.value.filter((p) => p.tag === "free").length;
+
+  // paket diskon hanya premium
+  const discountPremium = tryoutPackages.value.filter(
+    (p) => p.tag === "premium" && Number(p.discount) > 0,
+  ).length;
+
+  return { total, free, discountPremium };
 });
 
 const filteredPackages = computed(() => {
