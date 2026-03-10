@@ -46,21 +46,23 @@ const fetchTryouts = async () => {
 
     console.log(res.data);
 
-    tryoutPackages.value = list.map((t) => ({
-      id: t.id,
-      title: t.title,
-      subtitle: t.description || "Simulasi tryout terbaru",
-      category: t.category || "SKD",
-      price: t.price || 0,
-      isFree: t.type === "free",
-      duration: t.duration || 100,
-      questionCount: t.questionCount,
-      level: t.level || "Menengah",
-      seatsLeft: t.quota || 999,
-      discount: t.discount || null,
-      highlight: false,
-      tag: t.tag,
-    }));
+    tryoutPackages.value = list
+      .map((t) => ({
+        id: t.id,
+        title: t.title,
+        subtitle: t.description || "Simulasi tryout terbaru",
+        category: t.category || "SKD",
+        price: t.price || 0,
+        isFree: t.type === "free",
+        duration: t.duration || 100,
+        questionCount: t.questionCount,
+        level: t.level || "Menengah",
+        seatsLeft: t.quota || 999,
+        discount: Number(t.discount || 0),
+        highlight: false,
+        tag: t.tag,
+      }))
+      .sort((a, b) => Number(b.isFree) - Number(a.isFree));
     console.log(tryoutPackages);
   } catch (error) {
     console.error("Gagal mengambil tryout:", error);
@@ -89,10 +91,22 @@ const summary = computed(() => {
 
 const filteredPackages = computed(() => {
   if (selectedFilter.value === "semua") return tryoutPackages.value;
-  return tryoutPackages.value.filter((pkg) => {
-    if (selectedFilter.value === "gratis") return pkg.isFree;
-    return pkg.tag === selectedFilter.value;
-  });
+
+  if (selectedFilter.value === "gratis") {
+    return tryoutPackages.value.filter((pkg) => pkg.tag === "free");
+  }
+
+  if (selectedFilter.value === "populer") {
+    return tryoutPackages.value.filter((pkg) => pkg.tag === "premium");
+  }
+
+  if (selectedFilter.value === "diskon") {
+    return tryoutPackages.value.filter(
+      (pkg) => pkg.tag === "premium" && Number(pkg.discount) > 0,
+    );
+  }
+
+  return tryoutPackages.value;
 });
 
 const handleSelect = (pkg) => {

@@ -1,9 +1,12 @@
 <template>
   <article
     class="relative rounded-2xl border bg-white shadow-sm px-4 py-4 sm:px-5 sm:py-5 flex flex-col"
-    :class="
-      pkg.highlight ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-100'
-    "
+    :class="[
+      pkg.highlight
+        ? 'border-emerald-200 bg-emerald-50/50'
+        : 'border-slate-100',
+      pkg.tag === 'free' ? 'order-first' : '',
+    ]"
   >
     <!-- HEADER -->
     <div class="flex items-center justify-between gap-2">
@@ -15,6 +18,7 @@
       </p>
 
       <div class="flex gap-1.5">
+        <!-- FREE -->
         <span
           v-if="pkg.tag === 'free'"
           class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-[2px] text-[10px] font-semibold text-emerald-700"
@@ -22,19 +26,21 @@
           GRATIS
         </span>
 
-        <span
-          v-else-if="pkg.discount"
-          class="inline-flex items-center rounded-full bg-amber-100 px-2 py-[2px] text-[10px] font-semibold text-amber-700"
-        >
-          {{ pkg.discount }}% OFF
-        </span>
+        <!-- PREMIUM -->
+        <template v-else-if="pkg.tag === 'premium'">
+          <span
+            class="inline-flex items-center rounded-full bg-purple-100 px-2 py-[2px] text-[10px] font-semibold text-purple-700"
+          >
+            PREMIUM
+          </span>
 
-        <span
-          v-else-if="pkg.tag === 'premium'"
-          class="inline-flex items-center rounded-full bg-purple-100 px-2 py-[2px] text-[10px] font-semibold text-purple-700"
-        >
-          PREMIUM
-        </span>
+          <span
+            v-if="pkg.discount > 0"
+            class="inline-flex items-center rounded-full bg-amber-100 px-2 py-[2px] text-[10px] font-semibold text-amber-700"
+          >
+            {{ pkg.discount }}% OFF
+          </span>
+        </template>
       </div>
     </div>
 
@@ -53,7 +59,32 @@
         <dt class="text-slate-500">Harga</dt>
         <dd class="font-semibold">
           <span v-if="pkg.isFree">Gratis</span>
-          <span v-else>{{ pkg.price.toLocaleString("id-ID") }} koin</span>
+
+          <template v-else>
+            <!-- PREMIUM WITH DISCOUNT -->
+            <span
+              v-if="pkg.tag === 'premium' && pkg.discount > 0"
+              class="flex items-center gap-2"
+            >
+              <!-- original price -->
+              <span class="line-through text-slate-400 text-[11px]">
+                {{ pkg.price.toLocaleString("id-ID") }} koin
+              </span>
+
+              <!-- discounted price -->
+              <span class="text-emerald-600 font-semibold">
+                {{
+                  Math.round(
+                    pkg.price - (pkg.price * pkg.discount) / 100,
+                  ).toLocaleString("id-ID")
+                }}
+                koin
+              </span>
+            </span>
+
+            <!-- NORMAL PRICE -->
+            <span v-else> {{ pkg.price.toLocaleString("id-ID") }} koin </span>
+          </template>
         </dd>
       </div>
 
