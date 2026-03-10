@@ -66,14 +66,14 @@
       <div class="flex items-center gap-3">
         <div class="hidden sm:flex flex-col items-end leading-tight">
           <p class="text-xs text-teal-100">Halo,</p>
-          <p class="text-sm font-semibold">Aldo</p>
+          <p class="text-sm font-semibold">{{ user?.name || "User" }}</p>
         </div>
 
         <div
           class="h-9 w-9 rounded-full overflow-hidden border border-white/30 shadow"
         >
           <img
-            src="/src/assets/logo-kuydinas.png"
+            :src="user?.image || '/src/assets/logo-kuydinas.png'"
             alt="Foto profil"
             class="h-full w-full object-cover"
           />
@@ -82,3 +82,23 @@
     </div>
   </header>
 </template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import api from "../../services/api";
+
+const user = ref(null);
+
+const getUser = async () => {
+  try {
+    const res = await api.get("/user/me");
+    user.value = res.data.data.user;
+  } catch (err) {
+    console.error("Gagal mengambil data user:", err);
+  }
+};
+
+onMounted(() => {
+  getUser();
+});
+</script>

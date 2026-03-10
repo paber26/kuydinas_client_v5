@@ -52,9 +52,18 @@
         <p class="px-3 text-xs font-semibold text-slate-400 uppercase mb-2">
           Tryout
         </p>
+        <!-- <RouterLink
+          to="/tryoutSkd"
+          @click="toggleSidebar"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition"
+          active-class="bg-emerald-50 text-emerald-600 font-semibold"
+        >
+          <ClipboardCheck class="w-5 h-5 text-slate-500" />
+          <span>Tryout saya</span>
+        </RouterLink> -->
 
         <RouterLink
-          to="/tryoutskd"
+          to="/pengerjaantryout"
           @click="toggleSidebar"
           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition"
           active-class="bg-emerald-50 text-emerald-600 font-semibold"

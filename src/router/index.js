@@ -25,6 +25,11 @@ const routes = [
         name: "promotryout",
         component: () => import("../views/PromoTryout/Promotryout.vue"),
       },
+      // {
+      //   path: "tryoutSkd",
+      //   name: "tryoutskd",
+      //   component: () => import("../views/TryoutSkd/TryoutSkd.vue"),
+      // },
     ],
   },
   {
@@ -45,6 +50,19 @@ const routes = [
         path: "auth/google/callback",
         name: "google-callback",
         component: () => import("../views/Auth/GoogleCallback.vue"),
+      },
+    ],
+  },
+  {
+    path: "/pengerjaantryout/:id",
+    component: () => import("../layout/TryoutLayout.vue"),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: "",
+        name: "pengerjaantryout",
+        component: () =>
+          import("../views/PengerjaanTryout/PengerjaanTryout.vue"),
       },
     ],
   },

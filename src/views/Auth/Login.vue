@@ -74,11 +74,15 @@ const login = async () => {
       password: password.value,
     });
 
-    const token = res.data.token;
+    const token = res.data?.data?.token || res.data?.token;
 
-    localStorage.setItem("token", token);
-
-    router.push("/dashboard");
+    if (token) {
+      localStorage.setItem("token", token);
+      router.push("/dashboard");
+    } else {
+      console.error("Token tidak ditemukan pada response:", res.data);
+      alert("Login gagal: token tidak ditemukan");
+    }
   } catch (err) {
     alert("Login gagal");
   }
