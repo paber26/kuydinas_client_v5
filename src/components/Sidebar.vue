@@ -18,57 +18,107 @@
 
     <!-- Menu -->
     <nav class="mt-4 flex-1 px-3 space-y-1 text-sm">
-      <button
-        class="w-full flex items-center gap-2 rounded-xl bg-amber-300/80 text-slate-900 px-3 py-2.5 font-medium"
+      <router-link
+        to="/"
+        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5"
+        :class="
+          isActive('/')
+            ? 'bg-amber-300/80 text-slate-900 font-medium'
+            : 'text-slate-700 hover:bg-slate-100'
+        "
       >
         <span>🏠</span>
         <span>Beranda</span>
-      </button>
+      </router-link>
 
-      <button
-        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5 text-slate-700 hover:bg-slate-100"
+      <router-link
+        to="/materiskd"
+        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5"
+        :class="
+          isActive('/materiskd')
+            ? 'bg-amber-300/80 text-slate-900 font-medium'
+            : 'text-slate-700 hover:bg-slate-100'
+        "
       >
         <span>📚</span>
         <span>Materi SKD</span>
-      </button>
+      </router-link>
 
-      <button
-        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5 text-slate-700 hover:bg-slate-100"
+      <router-link
+        to="/promotryout"
+        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5"
+        :class="
+          isActive('/promotryout')
+            ? 'bg-amber-300/80 text-slate-900 font-medium'
+            : 'text-slate-700 hover:bg-slate-100'
+        "
       >
         <span>🔥</span>
         <span>Promo Try Out</span>
-      </button>
+      </router-link>
 
-      <button
-        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5 text-slate-700 hover:bg-slate-100"
+      <router-link
+        to="/pengerjaantryout"
+        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5"
+        :class="
+          isActive('/pengerjaantryout')
+            ? 'bg-amber-300/80 text-slate-900 font-medium'
+            : 'text-slate-700 hover:bg-slate-100'
+        "
       >
         <span>📝</span>
         <span>Pengerjaan Try Out SKD</span>
-      </button>
+      </router-link>
 
-      <button
-        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5 text-slate-700 hover:bg-slate-100"
+      <router-link
+        to="/peringkat"
+        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5"
+        :class="
+          isActive('/peringkat')
+            ? 'bg-amber-300/80 text-slate-900 font-medium'
+            : 'text-slate-700 hover:bg-slate-100'
+        "
       >
         <span>⭐</span>
         <span>Peringkat SKD</span>
-      </button>
+      </router-link>
 
-      <button
-        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5 text-slate-700 hover:bg-slate-100"
+      <router-link
+        to="/dompet"
+        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5"
+        :class="
+          isActive('/dompet')
+            ? 'bg-amber-300/80 text-slate-900 font-medium'
+            : 'text-slate-700 hover:bg-slate-100'
+        "
       >
         <span>👝</span>
         <span>Dompet</span>
-      </button>
+      </router-link>
     </nav>
 
     <!-- Keluar -->
     <div class="px-3 pb-4 pt-2 border-t border-slate-100">
-      <button
+      <router-link
+        to="/login"
         class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-rose-600 hover:bg-rose-50"
       >
         <span>↩️</span>
         <span>Keluar</span>
-      </button>
+      </router-link>
     </div>
   </aside>
 </template>
+
+<script setup>
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+
+const isActive = (path) => {
+  if (path === "/") {
+    return route.path === "/";
+  }
+  return route.path.startsWith(path);
+};
+</script>
