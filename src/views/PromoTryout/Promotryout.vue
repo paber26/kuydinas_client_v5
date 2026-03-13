@@ -30,25 +30,36 @@ import PromoBanner from "../../components/PromoTryout/PromoBanner.vue";
 import PromoFilters from "../../components/PromoTryout/PromoFilters.vue";
 import PromoGrid from "../../components/PromoTryout/PromoGrid.vue";
 
-const coins = 49500;
+const coins = ref(0);
 
 const router = useRouter();
 const tryoutPackages = ref([]);
 
 const fetchTryouts = async () => {
   try {
-    const res = await api.get("/tryouts");
+    const [tryoutsResponse, historyResponse, walletResponse] = await Promise.all([
+      api.get("/tryouts"),
+      api.get("/history"),
+      api.get("/wallet"),
+    ]);
 
     // pastikan data berupa array (beberapa backend mengembalikan {data: [...]})
-    const list = Array.isArray(res.data)
-      ? res.data
-      : Array.isArray(res.data.data)
-        ? res.data.data
+    const list = Array.isArray(tryoutsResponse.data)
+      ? tryoutsResponse.data
+      : Array.isArray(tryoutsResponse.data.data)
+        ? tryoutsResponse.data.data
         : [];
 
-    console.log(res.data);
+    const registeredList = Array.isArray(historyResponse.data?.data)
+      ? historyResponse.data.data
+      : [];
+    const registeredTryoutIds = new Set(
+      registeredList.map((item) => String(item.tryout_id ?? item.id)),
+    );
+    coins.value = Number(walletResponse.data?.data?.balance || 0);
 
     tryoutPackages.value = list
+      .filter((t) => !registeredTryoutIds.has(String(t.id)))
       .map((t) => ({
         id: t.id,
         title: t.title,
@@ -65,7 +76,6 @@ const fetchTryouts = async () => {
         tag: t.tag,
       }))
       .sort((a, b) => Number(b.isFree) - Number(a.isFree));
-    console.log(tryoutPackages);
   } catch (error) {
     console.error("Gagal mengambil tryout:", error);
   }

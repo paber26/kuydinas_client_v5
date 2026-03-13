@@ -21,6 +21,11 @@ const routes = [
         component: () => import("../views/MateriSkd/Materiskd.vue"),
       },
       {
+        path: "dompet",
+        name: "dompet",
+        component: () => import("../views/Dompet/Dompet.vue"),
+      },
+      {
         path: "promotryout",
         name: "promotryout",
         component: () => import("../views/PromoTryout/Promotryout.vue"),
