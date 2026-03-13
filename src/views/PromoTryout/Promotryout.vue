@@ -22,6 +22,7 @@
 
 <script setup>
 import { computed, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import api from "../../services/api";
 
 import PromoHeader from "../../components/PromoTryout/PromoHeader.vue";
@@ -31,6 +32,7 @@ import PromoGrid from "../../components/PromoTryout/PromoGrid.vue";
 
 const coins = 49500;
 
+const router = useRouter();
 const tryoutPackages = ref([]);
 
 const fetchTryouts = async () => {
@@ -116,9 +118,15 @@ const filteredPackages = computed(() => {
   return tryoutPackages.value;
 });
 
-const handleSelect = (pkg) => {
-  // TODO: ganti dengan navigasi ke halaman detail atau langsung mulai tryout
-  // misalnya: router.push({ name: 'checkout', params: { id: pkg.id } })
-  console.log("Paket dipilih:", pkg);
+const handleSelect = async (pkg) => {
+  router.push({
+    name: "panduan-tryout",
+    params: { id: pkg.id },
+    query: {
+      title: pkg.title,
+      category: pkg.category,
+      tag: pkg.tag || (pkg.isFree ? "free" : "premium"),
+    },
+  });
 };
 </script>

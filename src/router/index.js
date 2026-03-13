@@ -25,11 +25,35 @@ const routes = [
         name: "promotryout",
         component: () => import("../views/PromoTryout/Promotryout.vue"),
       },
+      {
+        path: "promotryout/:id/panduan",
+        name: "panduan-tryout",
+        component: () => import("../views/PromoTryout/TryoutGuide.vue"),
+      },
+      {
+        path: "pengerjaantryout",
+        name: "pengerjaantryout",
+        component: () =>
+          import("../views/PengerjaanTryout/PengerjaanTryout.vue"),
+      },
       // {
       //   path: "tryoutSkd",
       //   name: "tryoutskd",
       //   component: () => import("../views/TryoutSkd/TryoutSkd.vue"),
       // },
+    ],
+  },
+  {
+    path: "/pengerjaantryout/:id",
+    component: () => import("../layout/TryoutLayout.vue"),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: "",
+        name: "sesi-tryout",
+        component: () =>
+          import("../views/PengerjaanTryout/TryoutSession.vue"),
+      },
     ],
   },
   {
@@ -50,19 +74,6 @@ const routes = [
         path: "auth/google/callback",
         name: "google-callback",
         component: () => import("../views/Auth/GoogleCallback.vue"),
-      },
-    ],
-  },
-  {
-    path: "/pengerjaantryout/:id",
-    component: () => import("../layout/TryoutLayout.vue"),
-    meta: { requiresAuth: true },
-    children: [
-      {
-        path: "",
-        name: "pengerjaantryout",
-        component: () =>
-          import("../views/PengerjaanTryout/PengerjaanTryout.vue"),
       },
     ],
   },
