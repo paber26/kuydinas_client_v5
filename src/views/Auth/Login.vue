@@ -63,6 +63,8 @@ import { useRouter } from "vue-router";
 import api from "../../services/api";
 
 const router = useRouter();
+const apiBaseURL =
+  import.meta.env.VITE_API_BASE_URL || "https://apili.kuydinas.id/api";
 
 const email = ref("");
 const password = ref("");
@@ -89,6 +91,6 @@ const login = async () => {
 };
 
 const loginGoogle = () => {
-  window.location.href = "http://127.0.0.1:8000/api/user/auth/google/redirect";
+  window.location.href = `${apiBaseURL}/user/auth/google/redirect`;
 };
 </script>
