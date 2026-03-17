@@ -229,3 +229,10 @@ File ini dibuat sebagai ringkasan cepat agar lebih mudah memahami:
 - alur tryout user
 - komponen utama project
 - file penting yang berkaitan dengan flow tryout
+
+## Tambahan Catatan Dompet
+
+- Route halaman dompet sudah ada di `src/router/index.js` dengan path `/dompet`
+- View dompet ada di `src/views/Dompet/Dompet.vue`
+- Flow integrasi Midtrans untuk fitur dompet / top up saat ini belum berjalan atau belum siap dipakai end-to-end
+- Dokumentasi setup lokal Midtrans tersedia di `MIDTRANS_LOCAL_SETUP.md`, tetapi implementasi fitur dompet masih perlu dilanjutkan / diperbaiki

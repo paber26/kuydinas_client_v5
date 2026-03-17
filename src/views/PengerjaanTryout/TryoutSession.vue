@@ -304,6 +304,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "../../services/api";
+import { TRYOUT_ENDPOINTS } from "../../services/endpoints";
 import {
   autosaveTryout,
   getResult,
@@ -374,7 +375,7 @@ async function loadTryoutSession() {
   loadError.value = "";
 
   try {
-    const historyResponse = await api.get("/history");
+    const historyResponse = await api.get(TRYOUT_ENDPOINTS.history);
     const registeredTryouts = Array.isArray(historyResponse.data?.data)
       ? historyResponse.data.data
       : [];
@@ -389,7 +390,9 @@ async function loadTryoutSession() {
       );
     }
 
-    const detailResponse = await api.get(`/tryouts/${route.params.id}`);
+    const detailResponse = await api.get(
+      TRYOUT_ENDPOINTS.detail(route.params.id),
+    );
     const normalized = normalizeTryoutResponse(
       detailResponse.data,
       registeredTryout,
@@ -908,7 +911,7 @@ async function finishTryout() {
 
   try {
     const answers = buildAnswersPayload();
-    const response = await api.post(`/tryouts/${route.params.id}/submit`, {
+    const response = await api.post(TRYOUT_ENDPOINTS.submit(route.params.id), {
       answers,
     });
 

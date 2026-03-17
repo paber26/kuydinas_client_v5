@@ -4,17 +4,17 @@
 
     <div class="mb-4 flex gap-4">
       <button
-        @click="getPosts"
+        @click="getTryouts"
         class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
-        GET Posts
+        GET Tryouts
       </button>
 
       <button
-        @click="createPost"
+        @click="getProfile"
         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
       >
-        POST New Post
+        GET User Me
       </button>
     </div>
 
@@ -22,12 +22,12 @@
 
     <ul v-else class="space-y-2">
       <li
-        v-for="post in posts"
-        :key="post.id"
+        v-for="item in items"
+        :key="item.id"
         class="p-4 bg-white shadow rounded border"
       >
-        <h2 class="font-semibold">{{ post.title }}</h2>
-        <p class="text-sm text-slate-600">{{ post.body }}</p>
+        <h2 class="font-semibold">{{ item.title }}</h2>
+        <p class="text-sm text-slate-600">{{ item.body }}</p>
       </li>
     </ul>
   </section>
@@ -36,15 +36,23 @@
 <script setup>
 import { ref } from "vue";
 import api from "../services/api.js";
+import { AUTH_ENDPOINTS, TRYOUT_ENDPOINTS } from "../services/endpoints";
 
-const posts = ref([]);
+const items = ref([]);
 const loading = ref(false);
 
-async function getPosts() {
+async function getTryouts() {
   loading.value = true;
   try {
-    const res = await api.get("/posts");
-    posts.value = res.data;
+    const res = await api.get(TRYOUT_ENDPOINTS.list);
+    const data = Array.isArray(res.data?.data) ? res.data.data : res.data;
+    items.value = Array.isArray(data)
+      ? data.map((tryout) => ({
+          id: tryout.id,
+          title: tryout.title || `Tryout ${tryout.id}`,
+          body: tryout.description || "Tanpa deskripsi",
+        }))
+      : [];
   } catch (err) {
     console.error("Error GET:", err);
   } finally {
@@ -52,18 +60,19 @@ async function getPosts() {
   }
 }
 
-async function createPost() {
+async function getProfile() {
   try {
-    const payload = {
-      title: "Postingan Baru Dari KuyDinas",
-      body: "Ini adalah data uji axios.",
-      userId: 1,
-    };
-
-    const res = await api.post("/posts", payload);
-    alert("POST berhasil! ID: " + res.data.id);
+    const res = await api.get(AUTH_ENDPOINTS.user.me);
+    const user = res.data?.data?.user || res.data?.data || {};
+    items.value = [
+      {
+        id: user.id || "me",
+        title: user.name || "User",
+        body: user.email || "Email tidak tersedia",
+      },
+    ];
   } catch (err) {
-    console.error("Error POST:", err);
+    console.error("Error GET /user/me:", err);
   }
 }
 </script>

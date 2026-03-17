@@ -1,26 +1,27 @@
 import api from "./api";
+import { TRYOUT_ENDPOINTS } from "./endpoints";
 
 export const registerTryout = (id) => {
-  return api.post(`/tryouts/${id}/register`);
+  return api.post(TRYOUT_ENDPOINTS.register(id));
 };
 
 export const startTryout = (id) => {
-  return api.post(`/tryouts/${id}/start`);
+  return api.post(TRYOUT_ENDPOINTS.start(id));
 };
 
 export const autosaveTryout = (id, answers) => {
-  return api.post(`/tryouts/${id}/autosave`, {
+  return api.post(TRYOUT_ENDPOINTS.autosave(id), {
     answers,
   });
 };
 
 export const submitTryout = (id) => {
-  return api.post(`/tryouts/${id}/submit`);
+  return api.post(TRYOUT_ENDPOINTS.submit(id));
 };
 
 export const getRemainingTime = async (id) => {
   try {
-    return await api.get(`/tryouts/${id}/remaining-time`);
+    return await api.get(TRYOUT_ENDPOINTS.remainingTime(id));
   } catch (error) {
     // Beberapa backend mungkin tidak menyediakan endpoint ini.
     // Jika tidak ditemukan, kembalikan nilai null agar frontend bisa fallback ke durasi tryout.
@@ -32,17 +33,17 @@ export const getRemainingTime = async (id) => {
 };
 
 export const getResult = (id) => {
-  return api.get(`/tryouts/${id}/result`);
+  return api.get(TRYOUT_ENDPOINTS.result(id));
 };
 
 export const getHistory = () => {
-  return api.get(`/history`);
+  return api.get(TRYOUT_ENDPOINTS.history);
 };
 
 export const getRanking = (id) => {
-  return api.get(`/tryouts/${id}/ranking`);
+  return api.get(TRYOUT_ENDPOINTS.ranking(id));
 };
 
 export const getMyRank = (id) => {
-  return api.get(`/tryouts/${id}/my-rank`);
+  return api.get(TRYOUT_ENDPOINTS.myRank(id));
 };

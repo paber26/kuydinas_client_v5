@@ -68,6 +68,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../services/api";
+import { AUTH_ENDPOINTS } from "../../services/endpoints";
 
 const router = useRouter();
 
@@ -89,7 +90,7 @@ const register = async () => {
   loading.value = true;
 
   try {
-    await api.post("/user/register", {
+    await api.post(AUTH_ENDPOINTS.user.register, {
       name: name.value,
       email: email.value,
       password: password.value,

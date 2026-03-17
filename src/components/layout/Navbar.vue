@@ -86,12 +86,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import api from "../../services/api";
+import { AUTH_ENDPOINTS } from "../../services/endpoints";
 
 const user = ref(null);
 
 const getUser = async () => {
   try {
-    const res = await api.get("/user/me");
+    const res = await api.get(AUTH_ENDPOINTS.user.me);
     user.value = res.data.data.user;
   } catch (err) {
     console.error("Gagal mengambil data user:", err);

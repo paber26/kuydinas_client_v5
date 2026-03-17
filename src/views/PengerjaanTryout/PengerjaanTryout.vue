@@ -139,6 +139,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import api from "../../services/api";
+import { TRYOUT_ENDPOINTS } from "../../services/endpoints";
 import { getResult } from "../../services/tryoutService";
 
 const router = useRouter();
@@ -153,7 +154,7 @@ const selectedResult = ref(null);
 const loadUserTryouts = async () => {
   try {
     // endpoint yang menyimpan tryout milik user
-    const res = await api.get("/history");
+    const res = await api.get(TRYOUT_ENDPOINTS.history);
     tryouts.value = res.data.data || [];
     console.log(res);
   } catch (err) {

@@ -63,6 +63,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../services/api";
+import { TRYOUT_ENDPOINTS } from "../../services/endpoints";
 
 const router = useRouter();
 
@@ -72,7 +73,7 @@ const tryouts = ref([]);
 const loadUserTryouts = async () => {
   try {
     // endpoint yang mengembalikan tryout yang sudah ditambahkan user
-    const res = await api.get("/history");
+    const res = await api.get(TRYOUT_ENDPOINTS.history);
     tryouts.value = res.data.data || [];
   } catch (err) {
     console.error("Gagal mengambil tryout user:", err);

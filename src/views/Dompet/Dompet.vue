@@ -110,7 +110,28 @@
           </p>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          v-if="topupPackagesLoading"
+          class="rounded-2xl border border-slate-100 bg-white px-4 py-6 text-sm text-slate-500 shadow-sm"
+        >
+          Memuat paket top up...
+        </div>
+
+        <div
+          v-else-if="topupPackagesError"
+          class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-6 text-sm text-rose-600 shadow-sm"
+        >
+          {{ topupPackagesError }}
+        </div>
+
+        <div
+          v-else-if="packages.length === 0"
+          class="rounded-2xl border border-slate-100 bg-white px-4 py-6 text-sm text-slate-500 shadow-sm"
+        >
+          Belum ada paket top up yang tersedia.
+        </div>
+
+        <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <article
             v-for="pkg in packages"
             :key="pkg.id"
@@ -333,6 +354,19 @@
               <p class="text-[11px] text-slate-500">
                 {{ tx.description }} • {{ tx.date }}
               </p>
+              <p
+                v-if="tx.status"
+                class="mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                :class="
+                  tx.status === 'paid'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : tx.status === 'pending'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-rose-100 text-rose-700'
+                "
+              >
+                {{ tx.status }}
+              </p>
             </div>
             <p
               class="text-xs font-semibold"
@@ -355,9 +389,16 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import api from "../../services/api";
+import {
+  createWalletTopup,
+  getRedeemableTryouts,
+  getWallet,
+  getWalletTopupDetail,
+  getWalletTopupPackages,
+  redeemWalletTryout,
+} from "../../services/walletService";
 
 const balance = ref(0);
 const walletLoading = ref(true);
@@ -367,6 +408,9 @@ const walletMessage = ref({
   type: "success",
   text: "",
 });
+const topupPackagesLoading = ref(false);
+const topupPackagesError = ref("");
+const lastCreatedTopupId = ref(null);
 const midtransClientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY || "";
 const midtransSnapUrl =
   import.meta.env.VITE_MIDTRANS_SNAP_URL ||
@@ -386,45 +430,7 @@ const promoEvent = {
   maxBonus: 5500,
 };
 
-// Paket top up (dummy, ganti dengan data backend kalau sudah siap)
-const packages = [
-  {
-    id: 1,
-    coins: 100,
-    price: 10000,
-    bonus: 0,
-    tag: "Coba dulu",
-    highlight: false,
-    effectiveRate: 10000,
-  },
-  {
-    id: 2,
-    coins: 250,
-    price: 20000,
-    bonus: 50,
-    tag: "Favorit",
-    highlight: true,
-    effectiveRate: 8000,
-  },
-  {
-    id: 3,
-    coins: 400,
-    price: 30000,
-    bonus: 120,
-    tag: "Paling hemat",
-    highlight: true,
-    effectiveRate: 7500,
-  },
-  {
-    id: 4,
-    coins: 550,
-    price: 40000,
-    bonus: 200,
-    tag: "Paling hemat",
-    highlight: false,
-    effectiveRate: 7273,
-  },
-];
+const packages = ref([]);
 
 const transactions = ref([]);
 
@@ -436,6 +442,11 @@ const redeemError = ref("");
 const showWalletMessage = (text, type = "success") => {
   walletMessage.value = { text, type };
 };
+
+const wait = (ms) =>
+  new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
 
 const loadMidtransSnapScript = () =>
   new Promise((resolve, reject) => {
@@ -504,6 +515,23 @@ const normalizeTransaction = (item) => {
     String(item.type || "").toLowerCase() === "redeem_tryout" || rawAmount < 0;
   const amount = isExpense ? -Math.abs(rawAmount) : Math.abs(rawAmount);
   const absoluteAmount = Math.abs(amount);
+  const rawStatus = String(
+    item.status || item.transaction_status || item.payment_status || "",
+  ).toLowerCase();
+
+  let status = "";
+
+  if (rawStatus === "pending") {
+    status = "pending";
+  } else if (["paid", "settlement", "capture", "success"].includes(rawStatus)) {
+    status = "paid";
+  } else if (["failed", "deny"].includes(rawStatus)) {
+    status = "failed";
+  } else if (["cancelled", "cancel"].includes(rawStatus)) {
+    status = "cancelled";
+  } else if (["expired", "expire"].includes(rawStatus)) {
+    status = "expired";
+  }
 
   return {
     id: item.id,
@@ -512,6 +540,36 @@ const normalizeTransaction = (item) => {
     amountLabel: `${amount >= 0 ? "+" : "-"}${absoluteAmount.toLocaleString("id-ID")} koin`,
     description: item.description || item.type || "Transaksi koin",
     date: formatDateTime(item.created_at),
+    status,
+  };
+};
+
+const normalizeTopupPackage = (item, index) => {
+  const coins = Number(
+    item.coins ?? item.coin_amount ?? item.amount ?? item.quantity ?? 0,
+  );
+  const bonus = Number(item.bonus ?? item.bonus_coins ?? 0);
+  const totalCoins = Number(item.total_coins ?? coins + bonus);
+  const price = Number(
+    item.price ?? item.amount_rupiah ?? item.nominal ?? item.value ?? 0,
+  );
+  const effectiveRate =
+    totalCoins > 0 ? Math.round((price / totalCoins) * 100) : 0;
+  const normalizedId = item.id ?? item.package_id ?? item.code ?? index + 1;
+
+  return {
+    id: normalizedId,
+    packageId: item.package_id ?? item.id ?? normalizedId,
+    coins,
+    totalCoins,
+    price,
+    bonus,
+    tag: item.tag || item.badge || "",
+    highlight: Boolean(
+      item.highlight || item.is_highlighted || item.is_featured,
+    ),
+    effectiveRate,
+    raw: item,
   };
 };
 
@@ -519,7 +577,8 @@ const loadWallet = async () => {
   walletLoading.value = true;
 
   try {
-    const response = await api.get("/wallet");
+    const response = await getWallet();
+    console.log("[wallet] GET /wallet", response.data);
     const source = response.data?.data || {};
 
     balance.value = Number(source.balance || 0);
@@ -542,7 +601,7 @@ const loadRedeemTryouts = async () => {
   redeemError.value = "";
 
   try {
-    const response = await api.get("/wallet/redeemable-tryouts");
+    const response = await getRedeemableTryouts();
     const tryoutList = Array.isArray(response.data?.data)
       ? response.data.data
       : [];
@@ -572,19 +631,98 @@ const loadRedeemTryouts = async () => {
   }
 };
 
+const loadTopupPackages = async () => {
+  topupPackagesLoading.value = true;
+  topupPackagesError.value = "";
+
+  try {
+    const packageList = await getWalletTopupPackages();
+    console.log("[wallet] GET /wallet/topup-packages", packageList);
+    packages.value = packageList
+      .map(normalizeTopupPackage)
+      .filter((item) => item.packageId && item.coins > 0 && item.price > 0);
+  } catch (error) {
+    console.error("Gagal memuat paket top up:", error);
+    topupPackagesError.value =
+      error?.response?.data?.message ||
+      "Paket top up belum bisa dimuat dari backend.";
+    packages.value = [];
+  } finally {
+    topupPackagesLoading.value = false;
+  }
+};
+
 const refreshWalletData = async () => {
   walletMessage.value.text = "";
   await loadWallet();
   await loadRedeemTryouts();
 };
 
-const openMidtransSnap = async (snapToken) => {
-  const snap = await loadMidtransSnapScript();
+const refreshWalletUntilChanged = async (previousBalance) => {
+  const maxAttempts = 5;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    await loadWallet();
+
+    if (balance.value !== previousBalance) {
+      break;
+    }
+
+    if (attempt < maxAttempts - 1) {
+      await wait(1500);
+    }
+  }
+
+  await loadRedeemTryouts();
+};
+
+const checkLatestTopupStatus = async () => {
+  if (!lastCreatedTopupId.value) {
+    return null;
+  }
+
+  try {
+    const response = await getWalletTopupDetail(lastCreatedTopupId.value);
+    console.log(
+      `[wallet] GET /wallet/topup/${lastCreatedTopupId.value}`,
+      response.data,
+    );
+    return response.data?.data || null;
+  } catch (error) {
+    console.error("Gagal mengambil detail top up:", error);
+    return null;
+  }
+};
+
+const openMidtransSnap = async (snapToken, redirectUrl = "") => {
+  let snap = null;
+
+  try {
+    snap = await loadMidtransSnapScript();
+  } catch (error) {
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
+      return;
+    }
+
+    throw error;
+  }
+
+  if (!snap || typeof snap.pay !== "function") {
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
+      return;
+    }
+
+    throw new Error("Midtrans Snap tidak tersedia di browser.");
+  }
+
+  const previousBalance = balance.value;
 
   return new Promise((resolve, reject) => {
     snap.pay(snapToken, {
       onSuccess: async () => {
-        await refreshWalletData();
+        await refreshWalletUntilChanged(previousBalance);
         showWalletMessage(
           "Pembayaran berhasil diproses. Saldo dompet telah diperbarui.",
           "success",
@@ -593,7 +731,7 @@ const openMidtransSnap = async (snapToken) => {
       },
       onPending: () => {
         showWalletMessage(
-          "Pembayaran sedang menunggu konfirmasi. Silakan cek status transaksi.",
+          "Pembayaran sedang menunggu konfirmasi. Saldo akan bertambah setelah webhook Midtrans diproses backend.",
           "success",
         );
         resolve();
@@ -617,22 +755,40 @@ const handleSelectPackage = async (pkg) => {
   walletMessage.value.text = "";
 
   try {
-    const response = await api.post("/wallet/topup/create", {
-      package_id: pkg.id,
+    const response = await createWalletTopup({
+      package_id: pkg.packageId ?? pkg.id,
     });
+    console.log("[wallet] POST /wallet/topup/create", response.data);
     const source = response.data?.data || {};
+    const snapToken = source.snap_token || "";
+    const orderId = source.order_id || "";
+    const transactionId = source.transaction_id || source.id || null;
+    const redirectUrl = source.redirect_url || "";
 
-    if (source.snap_token) {
-      await openMidtransSnap(source.snap_token);
+    if (transactionId) {
+      lastCreatedTopupId.value = transactionId;
+    }
+
+    showWalletMessage(
+      orderId
+        ? `Transaksi top up berhasil dibuat. Order ID: ${orderId}`
+        : "Snap token berhasil dibuat. Lanjutkan pembayaran.",
+      "success",
+    );
+
+    if (snapToken) {
+      await openMidtransSnap(snapToken, redirectUrl);
       return;
     }
 
-    if (source.redirect_url) {
-      window.location.href = source.redirect_url;
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
       return;
     }
 
-    throw new Error("Backend tidak mengembalikan snap_token atau redirect_url.");
+    throw new Error(
+      "Backend tidak mengembalikan snap_token atau redirect_url.",
+    );
   } catch (error) {
     console.error("Gagal membuat transaksi top up:", error);
     showWalletMessage(
@@ -646,12 +802,22 @@ const handleSelectPackage = async (pkg) => {
   }
 };
 
+const syncTopupStatusAndWallet = async () => {
+  const detail = await checkLatestTopupStatus();
+
+  if (detail?.status) {
+    showWalletMessage(`Status transaksi terbaru: ${detail.status}`, "success");
+  }
+
+  await refreshWalletData();
+};
+
 const handleRedeemTryout = async (tryout) => {
   redeemSubmittingId.value = tryout.id;
   walletMessage.value.text = "";
 
   try {
-    const response = await api.post(`/wallet/redeem-tryout/${tryout.id}`);
+    const response = await redeemWalletTryout(tryout.id);
     const source = response.data?.data || {};
 
     balance.value = Number(source.remaining_balance ?? balance.value);
@@ -695,7 +861,25 @@ const handleRedeemTryout = async (tryout) => {
   }
 };
 
+const handlePageVisible = async () => {
+  if (document.visibilityState === "visible") {
+    await syncTopupStatusAndWallet();
+  }
+};
+
+const handleWindowFocus = async () => {
+  await syncTopupStatusAndWallet();
+};
+
 onMounted(() => {
+  loadTopupPackages();
   refreshWalletData();
+  document.addEventListener("visibilitychange", handlePageVisible);
+  window.addEventListener("focus", handleWindowFocus);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("visibilitychange", handlePageVisible);
+  window.removeEventListener("focus", handleWindowFocus);
 });
 </script>

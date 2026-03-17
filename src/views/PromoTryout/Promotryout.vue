@@ -24,6 +24,7 @@
 import { computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../services/api";
+import { TRYOUT_ENDPOINTS, WALLET_ENDPOINTS } from "../../services/endpoints";
 
 import PromoHeader from "../../components/PromoTryout/PromoHeader.vue";
 import PromoBanner from "../../components/PromoTryout/PromoBanner.vue";
@@ -38,9 +39,9 @@ const tryoutPackages = ref([]);
 const fetchTryouts = async () => {
   try {
     const [tryoutsResponse, historyResponse, walletResponse] = await Promise.all([
-      api.get("/tryouts"),
-      api.get("/history"),
-      api.get("/wallet"),
+      api.get(TRYOUT_ENDPOINTS.list),
+      api.get(TRYOUT_ENDPOINTS.history),
+      api.get(WALLET_ENDPOINTS.wallet),
     ]);
 
     // pastikan data berupa array (beberapa backend mengembalikan {data: [...]})

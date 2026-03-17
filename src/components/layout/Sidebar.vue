@@ -145,6 +145,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../services/api";
+import { AUTH_ENDPOINTS } from "../../services/endpoints";
 
 import {
   Home,
@@ -176,7 +177,7 @@ const logout = async () => {
 
   try {
     await api.post(
-      "/user/logout",
+      AUTH_ENDPOINTS.user.logout,
       {},
       {
         headers: {

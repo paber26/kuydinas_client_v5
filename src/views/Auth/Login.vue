@@ -61,17 +61,18 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../services/api";
+import { AUTH_ENDPOINTS, joinApiUrl } from "../../services/endpoints";
 
 const router = useRouter();
 const apiBaseURL =
-  import.meta.env.VITE_API_BASE_URL || "https://apili.kuydinas.id/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
 const email = ref("");
 const password = ref("");
 
 const login = async () => {
   try {
-    const res = await api.post("/user/login", {
+    const res = await api.post(AUTH_ENDPOINTS.user.login, {
       email: email.value,
       password: password.value,
     });
@@ -91,6 +92,9 @@ const login = async () => {
 };
 
 const loginGoogle = () => {
-  window.location.href = `${apiBaseURL}/user/auth/google/redirect`;
+  window.location.href = joinApiUrl(
+    apiBaseURL,
+    AUTH_ENDPOINTS.user.googleRedirect,
+  );
 };
 </script>
