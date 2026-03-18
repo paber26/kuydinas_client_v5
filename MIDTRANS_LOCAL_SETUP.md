@@ -98,3 +98,18 @@ Catatan:
 - Selesaikan pembayaran sandbox.
 - Cek apakah webhook masuk ke backend.
 - Cek apakah saldo `/wallet` bertambah.
+
+## 9. Troubleshooting (PNA Error)
+
+Jika muncul error **"Permission was denied for this request to access the 'local' address space"** saat membuka Snap popup, ini dikarenakan kebijakan Private Network Access (PNA) di Chrome.
+
+### Cara Mengatasi (Paling Cepat):
+
+1. Buka Chrome dan ketik di address bar: `chrome://flags/#block-insecure-private-network-requests`
+2. Ubah statusnya dari **Default/Enabled** menjadi **Disabled**.
+3. Relaunch/Restart Chrome.
+
+### Cara Alternatif (Lebih Aman):
+
+- Gunakan HTTPS untuk Vite (pakai plugin `@vitejs/plugin-basic-ssl`).
+- Gunakan `ngrok` untuk mengekspos frontend Vue ke URL publik `https`.

@@ -1,238 +1,376 @@
 # Project Overview
 
-Dokumen ini merangkum file dan bagian utama yang sudah dibuat di project `kuydinas_client_v5`.
+Dokumen ini merangkum struktur, fitur utama, dan flow aplikasi `kuydinas_client_v5` berdasarkan implementasi yang saat ini ada di project.
 
 ## Teknologi Utama
 
-- Frontend: Vue 3
-- Router: Vue Router
+- Frontend: Vue 3 (`script setup`)
+- Router: Vue Router 4
 - HTTP Client: Axios
-- Styling: Tailwind CSS
+- Styling: Tailwind CSS 4
 - Build Tool: Vite
+- Icon: `lucide-vue-next`
 
 ## Struktur Utama
 
 ### Root Project
 
 - `package.json`
-  Konfigurasi project, dependency, dan script build/dev.
+  Konfigurasi dependency dan script `dev`, `build`, `preview`.
 - `vite.config.js`
   Konfigurasi Vite.
-- `README.md`
-  Dokumen dasar project.
 - `index.html`
   Entry HTML utama aplikasi.
+- `README.md`
+  Dokumentasi dasar project.
+- `MIDTRANS_LOCAL_SETUP.md`
+  Panduan setup lokal integrasi Midtrans.
+- `VERCEL_DEPLOY.md`
+  Catatan deployment ke Vercel.
 
 ### Entry Frontend
 
 - `src/main.js`
-  Entry point Vue.
+  Entry point aplikasi Vue.
 - `src/App.vue`
   Root component aplikasi.
 - `src/style.css`
-  Style global.
+  Styling global.
 
-## Router
+## Route Aplikasi
 
-- `src/router/index.js`
-  Mengatur seluruh route aplikasi.
+Route dikelola di `src/router/index.js`.
 
-Route utama yang tersedia:
+### Route Dengan Dashboard Layout
 
 - `/dashboard`
-  Halaman dashboard.
+  Halaman dashboard utama.
 - `/materiskd`
   Halaman materi SKD.
+- `/dompet`
+  Halaman dompet, top up koin, redeem tryout, dan riwayat transaksi.
 - `/promotryout`
-  Halaman daftar promo tryout.
+  Halaman promo tryout yang belum dimiliki user.
 - `/promotryout/:id/panduan`
   Halaman panduan sebelum memulai tryout.
 - `/pengerjaantryout`
   Halaman daftar tryout milik user.
+
+### Route Dengan Tryout Layout
+
 - `/pengerjaantryout/:id`
-  Halaman sesi pengerjaan tryout tanpa sidebar/navbar.
+  Halaman sesi pengerjaan tryout full focus tanpa sidebar dan navbar.
+
+### Route Auth
+
 - `/login`
-  Halaman login.
+  Halaman login email/password dan login Google.
 - `/register`
-  Halaman register.
+  Halaman registrasi user.
 - `/auth/google/callback`
-  Callback login Google.
+  Callback autentikasi Google.
+
+### Guard
+
+- Route dengan `meta.requiresAuth` akan redirect ke `/login` jika token tidak ada.
+- User yang sudah login akan diarahkan ke `/dashboard` saat membuka `/login` atau `/register`.
 
 ## Layout
 
 - `src/layout/DashboardLayout.vue`
-  Layout utama yang memakai sidebar dan navbar.
+  Layout utama aplikasi setelah login.
 - `src/layout/AuthLayout.vue`
-  Layout untuk halaman autentikasi.
+  Layout halaman autentikasi.
 - `src/layout/TryoutLayout.vue`
-  Layout khusus sesi tryout tanpa sidebar dan navbar.
+  Layout khusus sesi tryout.
 
-## Services
+## Fitur Utama
 
-- `src/services/api.js`
-  Axios instance, base URL API, token auth, dan handling 401.
-- `src/services/tryoutService.js`
-  Kumpulan helper request untuk register tryout, start tryout, autosave, submit, result, ranking, dan history.
+### 1. Autentikasi User
 
-## Views
-
-### Auth
+File utama:
 
 - `src/views/Auth/Login.vue`
-  Halaman login user.
 - `src/views/Auth/Register.vue`
-  Halaman registrasi user.
 - `src/views/Auth/GoogleCallback.vue`
-  Halaman callback autentikasi Google.
+- `src/services/api.js`
+- `src/services/endpoints.js`
 
-### Dashboard
+Kemampuan saat ini:
+
+- Login menggunakan email dan password.
+- Register user baru.
+- Login dengan Google melalui redirect ke backend.
+- Penyimpanan token di `localStorage`.
+- Axios interceptor otomatis menambahkan bearer token ke setiap request.
+- Handling global `401 Unauthorized` untuk menghapus token dan redirect ke `/login`.
+
+### 2. Dashboard
+
+File utama:
 
 - `src/views/Dashboard/Dashboard.vue`
-  Halaman utama dashboard setelah login.
-
-### Materi
-
-- `src/views/MateriSkd/Materiskd.vue`
-  Halaman materi SKD.
-
-### Promo Tryout
-
-- `src/views/PromoTryout/Promotryout.vue`
-  Menampilkan daftar tryout yang belum diregistrasi user.
-  Memuat data dari `/tryouts` dan memfilter berdasarkan `/history`.
-- `src/views/PromoTryout/TryoutGuide.vue`
-  Halaman panduan tryout sebelum user mulai ujian.
-  Berisi:
-  - panduan follow Instagram
-  - panduan share ke WhatsApp
-  - upload 4 bukti
-  - validasi duplikat gambar
-  - tombol lanjut mulai tryout
-
-### Pengerjaan Tryout
-
-- `src/views/PengerjaanTryout/PengerjaanTryout.vue`
-  Halaman daftar tryout milik user.
-  Berisi:
-  - daftar tryout dari `/history`
-  - tombol lanjut tryout
-  - tombol lihat hasil
-  - modal hasil tryout
-- `src/views/PengerjaanTryout/TryoutSession.vue`
-  Halaman sesi pengerjaan tryout.
-  Berisi:
-  - daftar nomor soal
-  - tampilan soal dan opsi jawaban
-  - timer remaining time
-  - autosave jawaban
-  - submit tryout
-  - tampilan hasil tryout dari backend
-
-### Tryout Lain
-
-- `src/views/TryoutSkd/TryoutSkd.vue`
-  Halaman tryout lama/alternatif yang masih ada di project.
-
-## Components
-
-### Layout Components
-
-- `src/components/layout/Navbar.vue`
-  Navbar utama.
-- `src/components/layout/Sidebar.vue`
-  Sidebar utama.
-- `src/components/layout/Footer.vue`
-  Footer aplikasi.
-
-### Dashboard Components
-
 - `src/components/Dashboard/GreetingCard.vue`
 - `src/components/Dashboard/LastTryout.vue`
 - `src/components/Dashboard/LearningPath.vue`
-- `src/components/Dashboard/PromoCard.vue`
 - `src/components/Dashboard/StatsCard.vue`
+- `src/components/Dashboard/PromoCard.vue`
 - `src/components/Dashboard/SupportCard.vue`
 
-Komponen-komponen ini dipakai untuk menyusun tampilan dashboard.
+Kemampuan saat ini:
 
-### Promo Tryout Components
+- Menampilkan ringkasan dashboard user.
+- Menyusun informasi utama melalui beberapa card terpisah.
 
+### 3. Materi SKD
+
+File utama:
+
+- `src/views/MateriSkd/Materiskd.vue`
+
+Kemampuan saat ini:
+
+- Menyediakan halaman materi pembelajaran SKD.
+
+### 4. Promo Tryout
+
+File utama:
+
+- `src/views/PromoTryout/Promotryout.vue`
 - `src/components/PromoTryout/PromoHeader.vue`
-  Header ringkasan promo tryout.
 - `src/components/PromoTryout/PromoBanner.vue`
-  Banner informasi promo.
 - `src/components/PromoTryout/PromoFilters.vue`
-  Filter daftar tryout.
 - `src/components/PromoTryout/PromoGrid.vue`
-  Grid daftar paket tryout.
 - `src/components/PromoTryout/PromoCard.vue`
-  Card paket tryout dengan tombol ikut tryout.
 
-### Komponen Tambahan
+Kemampuan saat ini:
 
-- `src/components/Axiostest.vue`
-  Komponen testing request Axios.
-- `src/components/HelloWorld.vue`
-  Komponen default contoh.
+- Mengambil daftar tryout dari endpoint `/tryouts`.
+- Mengambil history tryout user dari `/history`.
+- Mengambil saldo koin user dari `/wallet`.
+- Menyembunyikan tryout yang sudah dimiliki user.
+- Menampilkan ringkasan jumlah paket.
+- Menyediakan filter:
+  - semua paket
+  - paket gratis
+  - paket populer
+  - paket diskon
+- Mengarahkan user ke halaman panduan sebelum mulai tryout.
 
-## Asset
+### 5. Panduan Sebelum Tryout
 
-- `src/assets/logo-kuydinas.png`
-  Logo aplikasi.
-- `src/assets/vue.svg`
-  Asset bawaan Vue.
+File utama:
 
-## Catatan Flow Saat Ini
+- `src/views/PromoTryout/TryoutGuide.vue`
+
+Kemampuan saat ini:
+
+- Menampilkan judul, kategori, dan tag tryout dari route/query.
+- Menampilkan langkah wajib sebelum tryout.
+- Validasi upload 4 bukti:
+  - 1 bukti follow Instagram
+  - 3 bukti share ke WhatsApp
+- Menolak file duplikat.
+- Menyediakan checklist verifikasi.
+- Mengaktifkan tombol mulai hanya jika semua syarat terpenuhi.
+
+### 6. Pengerjaan Tryout
+
+File utama:
+
+- `src/views/PengerjaanTryout/PengerjaanTryout.vue`
+- `src/views/PengerjaanTryout/TryoutSession.vue`
+- `src/services/tryoutService.js`
+
+Kemampuan saat ini:
+
+- Menampilkan daftar tryout user dari endpoint `/history`.
+- Menampilkan status tryout.
+- Tombol lanjut tryout untuk tryout yang belum selesai.
+- Tombol lihat hasil untuk tryout yang sudah selesai.
+- Modal hasil tryout berisi skor, ranking, jawaban benar, dan waktu selesai.
+- Halaman sesi tryout menampilkan:
+  - daftar nomor soal
+  - indikator soal aktif, terjawab, dan ragu-ragu
+  - ukuran font soal
+  - timer sisa waktu
+  - tombol navigasi antar soal
+  - fitur tandai ragu-ragu
+  - autosave jawaban
+  - submit tryout
+  - tampilan ringkasan hasil setelah selesai
+- Service tryout sudah mencakup helper untuk:
+  - register tryout
+  - start tryout
+  - autosave
+  - submit
+  - remaining time
+  - result
+  - history
+  - ranking
+  - my rank
+
+### 7. Fitur Dompet
+
+File utama:
+
+- `src/views/Dompet/Dompet.vue`
+- `src/services/walletService.js`
+- `src/services/endpoints.js`
+- `MIDTRANS_LOCAL_SETUP.md`
+
+Kemampuan saat ini:
+
+- Menampilkan saldo koin user dari endpoint `/wallet`.
+- Menampilkan estimasi jumlah tryout premium yang bisa dibeli dari saldo saat ini.
+- Menampilkan promo event di halaman dompet.
+- Mengambil dan menampilkan paket top up dari endpoint `/wallet/topup-packages`.
+- Normalisasi data paket top up dari berbagai kemungkinan format response backend.
+- Membuat transaksi top up melalui endpoint `/wallet/topup/create`.
+- Membuka pembayaran Midtrans Snap jika backend mengembalikan `snap_token`.
+- Fallback ke `redirect_url` jika Snap tidak tersedia atau backend memakai redirect flow.
+- Mengecek detail transaksi top up terbaru melalui `/wallet/topup/:id`.
+- Refresh saldo dan riwayat transaksi setelah pembayaran berhasil atau status berubah.
+- Menampilkan daftar tryout yang bisa ditukar dengan koin dari endpoint `/wallet/redeemable-tryouts`.
+- Menukar koin dengan tryout melalui endpoint `/wallet/redeem-tryout/:id`.
+- Menampilkan status kecukupan saldo untuk setiap tryout premium.
+- Menampilkan riwayat transaksi koin pada halaman dompet.
+- Menampilkan feedback sukses/error ke user selama proses wallet.
+
+## Service Layer
+
+### `src/services/api.js`
+
+- Membuat instance Axios dengan `baseURL` dari `VITE_API_BASE_URL`.
+- Menambahkan header default JSON.
+- Menambahkan Authorization header otomatis jika token tersedia.
+- Menangani response `401` secara global.
+
+### `src/services/endpoints.js`
+
+Menyimpan konstanta endpoint untuk:
+
+- auth user
+- auth admin
+- tryout
+- wallet
+- admin soal
+- admin tryout
+
+### `src/services/tryoutService.js`
+
+Helper request untuk flow tryout user, termasuk fallback aman jika endpoint remaining time tidak tersedia.
+
+### `src/services/walletService.js`
+
+Helper request untuk flow dompet:
+
+- `getWallet()`
+- `getRedeemableTryouts()`
+- `createWalletTopup(payload)`
+- `redeemWalletTryout(tryoutId)`
+- `getWalletTopupPackages()`
+- `getWalletTopupDetail(id)`
+
+## Komponen Layout dan Navigasi
+
+File utama:
+
+- `src/components/layout/Navbar.vue`
+- `src/components/layout/Sidebar.vue`
+- `src/components/layout/Footer.vue`
+
+Kemampuan saat ini:
+
+- Sidebar menyediakan akses ke dashboard, tryout, materi, dompet, dan promo tryout.
+- Tersedia tombol logout yang memanggil endpoint logout user lalu menghapus token lokal.
+
+## Flow Utama Aplikasi
+
+### Flow Login
+
+1. User membuka `/login`.
+2. User login dengan email/password atau Google.
+3. Token disimpan di `localStorage`.
+4. User diarahkan ke `/dashboard`.
 
 ### Flow Promo Tryout
 
-1. User membuka `Promotryout.vue`
-2. Frontend memuat daftar tryout
-3. Tryout yang sudah ada di history user tidak ditampilkan
-4. User memilih tryout
-5. User diarahkan ke `TryoutGuide.vue`
-6. Setelah memenuhi langkah panduan, user mulai tryout
+1. User membuka `/promotryout`.
+2. Frontend memuat daftar tryout, history user, dan saldo dompet.
+3. Tryout yang sudah dimiliki tidak ditampilkan.
+4. User memilih paket tryout.
+5. User diarahkan ke `/promotryout/:id/panduan`.
+
+### Flow Mulai Tryout
+
+1. User menyelesaikan checklist dan upload bukti di `TryoutGuide.vue`.
+2. Setelah valid, user mulai tryout.
+3. User diarahkan ke sesi tryout `/pengerjaantryout/:id`.
 
 ### Flow Pengerjaan Tryout
 
-1. User masuk ke `TryoutSession.vue`
-2. Frontend memuat detail tryout dan soal
-3. Frontend memuat remaining time
-4. User menjawab soal
-5. Jawaban di-autosave
-6. Saat submit, frontend mengirim jawaban ke backend
-7. Hasil ditampilkan berdasarkan response backend
+1. Frontend memuat detail tryout dan daftar soal.
+2. Frontend memuat remaining time jika endpoint tersedia.
+3. User menjawab soal.
+4. Jawaban disimpan dengan autosave.
+5. User submit atau mengakhiri tryout.
+6. Hasil ditampilkan dari response backend.
 
 ### Flow Hasil Tryout
 
-1. User membuka `PengerjaanTryout.vue`
-2. User klik `Lihat Hasil`
-3. Frontend memanggil endpoint result
-4. Score, jawaban benar, dan waktu selesai ditampilkan di modal
+1. User membuka `/pengerjaantryout`.
+2. User klik `Lihat Hasil`.
+3. Frontend memanggil endpoint result.
+4. Skor, ranking, jawaban benar, dan waktu selesai ditampilkan di modal.
 
-## File yang Ditambahkan/Difokuskan di Flow Tryout
+### Flow Dompet dan Top Up
 
-- `src/views/PromoTryout/TryoutGuide.vue`
-- `src/views/PengerjaanTryout/TryoutSession.vue`
-- `src/views/PengerjaanTryout/PengerjaanTryout.vue`
-- `src/views/PromoTryout/Promotryout.vue`
-- `src/router/index.js`
-- `src/layout/TryoutLayout.vue`
-- `src/services/tryoutService.js`
+1. User membuka `/dompet`.
+2. Frontend memuat saldo, transaksi, paket top up, dan tryout redeemable.
+3. User memilih paket top up.
+4. Frontend membuat transaksi top up ke backend.
+5. Jika tersedia, Midtrans Snap dibuka untuk proses pembayaran.
+6. Setelah sukses atau status berubah, saldo dan riwayat dompet dimuat ulang.
 
-## Tujuan Dokumen Ini
+### Flow Redeem Tryout Dengan Koin
 
-File ini dibuat sebagai ringkasan cepat agar lebih mudah memahami:
+1. User membuka daftar tryout redeemable di halaman dompet.
+2. Frontend menandai apakah saldo user cukup atau tidak.
+3. User klik tukar koin pada tryout yang tersedia.
+4. Frontend memanggil endpoint redeem.
+5. Saldo dompet dan daftar tryout dimuat ulang.
 
-- halaman apa saja yang ada
-- layout yang dipakai
-- alur tryout user
-- komponen utama project
-- file penting yang berkaitan dengan flow tryout
+## Fitur Baru yang Sudah Ditambahkan
 
-## Tambahan Catatan Dompet
+Bagian ini merangkum fitur baru yang sudah tampak aktif di implementasi saat ini:
 
-- Route halaman dompet sudah ada di `src/router/index.js` dengan path `/dompet`
-- View dompet ada di `src/views/Dompet/Dompet.vue`
-- Flow integrasi Midtrans untuk fitur dompet / top up saat ini belum berjalan atau belum siap dipakai end-to-end
-- Dokumentasi setup lokal Midtrans tersedia di `MIDTRANS_LOCAL_SETUP.md`, tetapi implementasi fitur dompet masih perlu dilanjutkan / diperbaiki
+- Halaman `Dompet` sudah aktif sebagai route `/dompet`.
+- Integrasi service wallet sudah tersedia di `src/services/walletService.js`.
+- Paket top up diambil dari backend, bukan lagi data dummy statis.
+- Pembuatan transaksi top up sudah memanggil backend.
+- Midtrans Snap sudah disiapkan di frontend melalui script dinamis dan env:
+  - `VITE_MIDTRANS_CLIENT_KEY`
+  - `VITE_MIDTRANS_SNAP_URL`
+- Frontend sudah memiliki fallback ke `redirect_url` jika Snap popup tidak dipakai.
+- Detail transaksi top up terbaru bisa dicek ulang untuk sinkronisasi status.
+- User sudah bisa redeem tryout premium dengan koin.
+- Riwayat transaksi dompet sudah ditampilkan di UI.
+- Promo tryout sekarang ikut membaca saldo wallet user.
+
+## Catatan Implementasi Saat Ini
+
+- Integrasi dompet sudah jauh lebih maju dibanding dokumentasi overview sebelumnya.
+- Frontend dompet sudah siap untuk flow top up dan redeem, tetapi keberhasilan end-to-end tetap bergantung pada response backend dan webhook Midtrans.
+- Dokumentasi setup lokal Midtrans tersedia di `MIDTRANS_LOCAL_SETUP.md`.
+
+## Tujuan Dokumen
+
+File ini dibuat agar lebih mudah memahami:
+
+- struktur project
+- route yang tersedia
+- fitur utama aplikasi
+- flow tryout user
+- flow dompet dan top up
+- file penting yang terkait dengan fitur inti

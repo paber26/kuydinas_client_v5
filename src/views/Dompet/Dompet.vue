@@ -509,6 +509,100 @@ const formatDateTime = (value) => {
   });
 };
 
+const toFiniteNumber = (...values) => {
+  for (const value of values) {
+    if (value === null || value === undefined || value === "") {
+      continue;
+    }
+
+    const normalized =
+      typeof value === "string" ? value.replace(/[^\d.-]/g, "") : value;
+    const parsed = Number(normalized);
+
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return 0;
+};
+
+const pickFirstArray = (...values) => {
+  for (const value of values) {
+    if (Array.isArray(value)) {
+      return value;
+    }
+  }
+
+  return [];
+};
+
+const extractWalletState = (payload) => {
+  const root = payload || {};
+  const candidates = [
+    root.data?.wallet,
+    root.data?.data?.wallet,
+    root.data?.data,
+    root.data,
+    root.wallet,
+    root.result?.wallet,
+    root.result,
+    root,
+  ].filter((value) => value && typeof value === "object");
+
+  let balanceValue = 0;
+  let balanceFound = false;
+  let transactionList = [];
+
+  for (const candidate of candidates) {
+    if (!balanceFound) {
+      const detectedBalance = toFiniteNumber(
+        candidate.balance,
+        candidate.coin_balance,
+        candidate.coins,
+        candidate.saldo,
+        candidate.wallet_balance,
+        candidate.total_coin,
+        candidate.total_coins,
+        candidate.available_balance,
+      );
+
+      const hasExplicitBalanceKey = [
+        "balance",
+        "coin_balance",
+        "coins",
+        "saldo",
+        "wallet_balance",
+        "total_coin",
+        "total_coins",
+        "available_balance",
+      ].some((key) => candidate[key] !== undefined && candidate[key] !== null);
+
+      if (hasExplicitBalanceKey) {
+        balanceValue = detectedBalance;
+        balanceFound = true;
+      }
+    }
+
+    if (transactionList.length === 0) {
+      transactionList = pickFirstArray(
+        candidate.transactions,
+        candidate.transaction,
+        candidate.histories,
+        candidate.history,
+        candidate.wallet_transactions,
+        candidate.ledger,
+        candidate.items,
+      );
+    }
+  }
+
+  return {
+    balance: balanceFound ? balanceValue : 0,
+    transactions: transactionList,
+  };
+};
+
 const normalizeTransaction = (item) => {
   const rawAmount = Number(item.amount || 0);
   const isExpense =
@@ -579,12 +673,11 @@ const loadWallet = async () => {
   try {
     const response = await getWallet();
     console.log("[wallet] GET /wallet", response.data);
-    const source = response.data?.data || {};
+    const walletState = extractWalletState(response.data);
 
-    balance.value = Number(source.balance || 0);
-    transactions.value = Array.isArray(source.transactions)
-      ? source.transactions.map(normalizeTransaction)
-      : [];
+    balance.value = walletState.balance;
+    transactions.value = walletState.transactions.map(normalizeTransaction);
+    console.log("[wallet] normalized", walletState);
   } catch (error) {
     console.error("Gagal memuat dompet:", error);
     showWalletMessage(
@@ -665,7 +758,7 @@ const refreshWalletUntilChanged = async (previousBalance) => {
     await loadWallet();
 
     if (balance.value !== previousBalance) {
-      break;
+      return true;
     }
 
     if (attempt < maxAttempts - 1) {
@@ -674,6 +767,7 @@ const refreshWalletUntilChanged = async (previousBalance) => {
   }
 
   await loadRedeemTryouts();
+  return false;
 };
 
 const checkLatestTopupStatus = async () => {
@@ -722,11 +816,36 @@ const openMidtransSnap = async (snapToken, redirectUrl = "") => {
   return new Promise((resolve, reject) => {
     snap.pay(snapToken, {
       onSuccess: async () => {
-        await refreshWalletUntilChanged(previousBalance);
-        showWalletMessage(
-          "Pembayaran berhasil diproses. Saldo dompet telah diperbarui.",
-          "success",
-        );
+        const balanceChanged =
+          await refreshWalletUntilChanged(previousBalance);
+        const latestTopupDetail = await checkLatestTopupStatus();
+        const latestStatus = String(
+          latestTopupDetail?.status ||
+            latestTopupDetail?.transaction_status ||
+            latestTopupDetail?.payment_status ||
+            "",
+        ).toLowerCase();
+
+        if (balanceChanged) {
+          showWalletMessage(
+            "Pembayaran berhasil diproses. Saldo dompet telah diperbarui.",
+            "success",
+          );
+          resolve();
+          return;
+        }
+
+        if (
+          ["paid", "settlement", "capture", "success"].includes(latestStatus)
+        ) {
+          showWalletMessage(
+            "Pembayaran sudah sukses, tetapi saldo belum berubah dari endpoint /wallet. Kemungkinan webhook/backend belum mengkredit koin.",
+            "error",
+          );
+          resolve();
+          return;
+        }
+
         resolve();
       },
       onPending: () => {
