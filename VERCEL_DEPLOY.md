@@ -2,7 +2,7 @@
 
 Dokumen ini dipakai untuk deploy frontend Vue ke Vercel dengan backend publik:
 
-- Frontend: Vercel
+- Frontend: `https://kuydinasclientv5.vercel.app/`
 - Backend API: `https://apili.kuydinas.id`
 - Payment: Midtrans Snap
 
@@ -16,11 +16,14 @@ VITE_MIDTRANS_CLIENT_KEY=Mid-client-H_w4TLBf1kgkfUHx
 VITE_MIDTRANS_SNAP_URL=https://app.sandbox.midtrans.com/snap/snap.js
 ```
 
-Jika sudah production Midtrans:
+*(Catatan: Jika sudah ke production, ubah URL Snap ke https://app.midtrans.com/snap/snap.js).*
 
-```env
-VITE_MIDTRANS_SNAP_URL=https://app.midtrans.com/snap/snap.js
-```
+## Konfigurasi Dashboard Midtrans
+
+Buka dashboard Midtrans (Sandbox/Production) dan atur **Notification URL**:
+
+- URL: `https://apili.kuydinas.id/api/payments/midtrans/webhook`
+- Pastikan URL ini bisa diakses secara publik.
 
 ## Catatan Frontend
 
