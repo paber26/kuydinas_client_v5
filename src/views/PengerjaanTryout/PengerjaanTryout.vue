@@ -132,6 +132,29 @@
         </div>
       </div>
     </div>
+    <!-- Modal Success -->
+    <div
+      v-if="showSuccessPopup"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4"
+    >
+      <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl text-center">
+        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 mb-4">
+          <svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-slate-900">Pendaftaran Berhasil</h2>
+        <p class="mt-2 text-sm text-slate-500">
+          Berhasil mengirim bukti persyaratan ikut tryout dan sudah bisa ikut tryout.
+        </p>
+        <button
+          @click="closeSuccessPopup"
+          class="mt-6 w-full rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition"
+        >
+          Tutup
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -150,6 +173,14 @@ const tryouts = ref([]);
 const resultLoading = ref(false);
 const resultError = ref("");
 const selectedResult = ref(null);
+const showSuccessPopup = ref(false);
+
+const closeSuccessPopup = () => {
+  showSuccessPopup.value = false;
+  const query = { ...route.query };
+  delete query.success;
+  router.replace({ query });
+};
 
 const loadUserTryouts = async () => {
   try {
@@ -256,6 +287,9 @@ const closeResult = () => {
 
 onMounted(() => {
   loadUserTryouts();
+  if (route.query.success === "promo_submitted") {
+    showSuccessPopup.value = true;
+  }
 });
 
 watch(

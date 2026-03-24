@@ -278,7 +278,7 @@
 <script setup>
 import { computed, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { startTryout, registerTryout } from "../../services/tryoutService";
+import { registerTryout } from "../../services/tryoutService";
 
 const route = useRoute();
 const router = useRouter();
@@ -492,12 +492,10 @@ async function submitGuide() {
     // Registrasi tryout dulu
     await registerTryout(tryoutId.value);
 
-    // Lalu mulai tryout
-    await startTryout(tryoutId.value);
+    // Beralih ke halaman pengerjaan tryout
     router.push({
-      name: "sesi-tryout",
-      params: { id: tryoutId.value },
-      query: { refresh: Date.now() },
+      name: "pengerjaantryout",
+      query: { success: "promo_submitted" },
     });
   } catch (error) {
     console.error("Gagal memulai tryout:", error);
