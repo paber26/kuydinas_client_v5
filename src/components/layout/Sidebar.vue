@@ -1,152 +1,147 @@
 <template>
-  <!-- Overlay mobile -->
-  <div
-    v-if="open"
-    @click="toggleSidebar"
-    class="fixed inset-0 bg-black/40 z-20 md:hidden"
-  ></div>
+  <div class="flex h-full flex-col bg-white">
+    <div class="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+      <div class="flex items-center gap-3">
+        <div
+          class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 font-bold text-white"
+        >
+          KD
+        </div>
 
-  <aside
-    class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300"
-    :class="open ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
-  >
-    <!-- Logo -->
-    <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
-      <div
-        class="h-10 w-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-bold"
+        <div>
+          <p class="text-xs text-slate-500">Tryout SKD CPNS</p>
+          <p class="text-sm font-semibold text-slate-800">Kuy Dinas</p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 md:hidden"
+        aria-label="Tutup sidebar"
+        @click="emitNavigate"
       >
-        KD
-      </div>
-
-      <div>
-        <p class="text-xs text-slate-500">Tryout SKD CPNS</p>
-        <p class="text-sm font-semibold text-slate-800">Kuy Dinas</p>
-      </div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
     </div>
 
-    <nav class="mt-4 flex-1 px-3 space-y-6 text-sm">
-      <!-- DASHBOARD -->
+    <nav class="mt-4 flex-1 space-y-6 px-3 text-sm">
       <div>
-        <p class="px-3 text-xs font-semibold text-slate-400 uppercase mb-2">
+        <p class="mb-2 px-3 text-xs font-semibold uppercase text-slate-400">
           Dashboard
         </p>
 
         <RouterLink
-          to="/"
-          @click="toggleSidebar"
-          class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition"
-          active-class="text-emerald-600 font-semibold"
+          to="/dashboard"
+          @click="emitNavigate"
+          class="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
+          active-class="bg-emerald-50 text-emerald-600 font-semibold"
         >
           <span
-            class="absolute left-0 h-5 w-1 rounded-r bg-emerald-500 opacity-0 group-[.router-link-active]:opacity-100 transition"
+            class="absolute left-0 h-5 w-1 rounded-r bg-emerald-500 opacity-0 transition group-[.router-link-active]:opacity-100"
           ></span>
-
-          <Home class="w-5 h-5 text-slate-500 group-hover:text-emerald-500" />
-
+          <Home class="h-5 w-5 text-slate-500 group-hover:text-emerald-500" />
           <span>Beranda</span>
         </RouterLink>
       </div>
 
-      <!-- TRYOUT -->
       <div>
-        <p class="px-3 text-xs font-semibold text-slate-400 uppercase mb-2">
+        <p class="mb-2 px-3 text-xs font-semibold uppercase text-slate-400">
           Tryout
         </p>
-        <!-- <RouterLink
-          to="/tryoutSkd"
-          @click="toggleSidebar"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition"
-          active-class="bg-emerald-50 text-emerald-600 font-semibold"
-        >
-          <ClipboardCheck class="w-5 h-5 text-slate-500" />
-          <span>Tryout saya</span>
-        </RouterLink> -->
 
         <RouterLink
           to="/pengerjaantryout"
-          @click="toggleSidebar"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition"
+          @click="emitNavigate"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
           active-class="bg-emerald-50 text-emerald-600 font-semibold"
         >
-          <ClipboardCheck class="w-5 h-5 text-slate-500" />
+          <ClipboardCheck class="h-5 w-5 text-slate-500" />
           <span>Pengerjaan Tryout</span>
         </RouterLink>
 
         <RouterLink
           to="/peringkat"
-          @click="toggleSidebar"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition"
+          @click="emitNavigate"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
           active-class="bg-emerald-50 text-emerald-600 font-semibold"
         >
-          <Trophy class="w-5 h-5 text-slate-500" />
+          <Trophy class="h-5 w-5 text-slate-500" />
           <span>Peringkat SKD</span>
         </RouterLink>
       </div>
 
-      <!-- BELAJAR -->
       <div>
-        <p class="px-3 text-xs font-semibold text-slate-400 uppercase mb-2">
+        <p class="mb-2 px-3 text-xs font-semibold uppercase text-slate-400">
           Belajar
         </p>
 
         <RouterLink
           to="/materiskd"
-          @click="toggleSidebar"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition"
+          @click="emitNavigate"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
           active-class="bg-emerald-50 text-emerald-600 font-semibold"
         >
-          <BookOpen class="w-5 h-5 text-slate-500" />
+          <BookOpen class="h-5 w-5 text-slate-500" />
           <span>Materi SKD</span>
         </RouterLink>
       </div>
 
-      <!-- AKUN -->
       <div>
-        <p class="px-3 text-xs font-semibold text-slate-400 uppercase mb-2">
+        <p class="mb-2 px-3 text-xs font-semibold uppercase text-slate-400">
           Akun
         </p>
 
         <RouterLink
           to="/dompet"
-          @click="toggleSidebar"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition"
+          @click="emitNavigate"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
           active-class="bg-emerald-50 text-emerald-600 font-semibold"
         >
-          <Wallet class="w-5 h-5 text-slate-500" />
+          <Wallet class="h-5 w-5 text-slate-500" />
           <span>Dompet</span>
         </RouterLink>
 
         <RouterLink
           to="/promotryout"
-          @click="toggleSidebar"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition"
+          @click="emitNavigate"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
           active-class="bg-emerald-50 text-emerald-600 font-semibold"
         >
-          <Flame class="w-5 h-5 text-slate-500" />
+          <Flame class="h-5 w-5 text-slate-500" />
           <span>Promo Tryout</span>
         </RouterLink>
       </div>
     </nav>
 
-    <!-- Logout -->
-    <div class="px-3 pb-4 pt-2 border-t border-slate-100">
+    <div class="border-t border-slate-100 px-3 pb-4 pt-2">
       <button
         @click="logout"
-        class="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition"
+        class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-rose-600 transition hover:bg-rose-50"
       >
-        <LogOut class="w-5 h-5" />
+        <LogOut class="h-5 w-5" />
         Keluar
       </button>
     </div>
-  </aside>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "../../services/api";
 import { AUTH_ENDPOINTS } from "../../services/endpoints";
-
 import {
   Home,
   ClipboardCheck,
@@ -157,20 +152,12 @@ import {
   LogOut,
 } from "lucide-vue-next";
 
-const open = ref(false);
+const emit = defineEmits(["navigate"]);
 const router = useRouter();
 
-const toggleSidebar = () => {
-  open.value = !open.value;
+const emitNavigate = () => {
+  emit("navigate");
 };
-
-onMounted(() => {
-  const btn = document.getElementById("sidebar-toggle");
-
-  if (btn) {
-    btn.addEventListener("click", toggleSidebar);
-  }
-});
 
 const logout = async () => {
   const token = localStorage.getItem("token");
@@ -183,15 +170,15 @@ const logout = async () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
   } catch (err) {
-    // Ignore 401 errors because token might already be invalid
     if (err?.response?.status !== 401) {
       console.error(err);
     }
   }
 
+  emitNavigate();
   localStorage.removeItem("token");
   router.push("/login");
 };
