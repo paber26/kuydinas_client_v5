@@ -65,6 +65,12 @@ const routes = [
         component: () =>
           import("../views/PengerjaanTryout/TryoutSession.vue"),
       },
+      {
+        path: "hasil",
+        name: "hasil-tryout",
+        component: () =>
+          import("../views/PengerjaanTryout/TryoutResult.vue"),
+      },
     ],
   },
   {
