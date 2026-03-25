@@ -9,22 +9,24 @@ export const startTryout = (id) => {
   return api.post(TRYOUT_ENDPOINTS.start(id));
 };
 
-export const autosaveTryout = (id, answers) => {
+export const autosaveTryout = (id, answers = {}, sessionState = {}) => {
   return api.post(TRYOUT_ENDPOINTS.autosave(id), {
     answers,
+    session_state: sessionState,
   });
 };
 
-export const submitTryout = (id) => {
-  return api.post(TRYOUT_ENDPOINTS.submit(id));
+export const submitTryout = (id, answers = {}, sessionState = {}) => {
+  return api.post(TRYOUT_ENDPOINTS.submit(id), {
+    answers,
+    session_state: sessionState,
+  });
 };
 
 export const getRemainingTime = async (id) => {
   try {
     return await api.get(TRYOUT_ENDPOINTS.remainingTime(id));
   } catch (error) {
-    // Beberapa backend mungkin tidak menyediakan endpoint ini.
-    // Jika tidak ditemukan, kembalikan nilai null agar frontend bisa fallback ke durasi tryout.
     if (error?.response?.status === 404) {
       return { data: { remaining_seconds: null } };
     }

@@ -137,11 +137,11 @@
                     <button type="button" class="inline-flex items-center justify-center rounded-xl px-3 py-1.5 font-semibold shadow-sm transition" :class="
                       item.status === 'completed'
                         ? 'bg-emerald-500 text-white hover:bg-emerald-600'
-                        : item.status === 'in_progress' || item.status === 'ongoing'
+                        : isInProgressStatus(item.status)
                         ? 'bg-amber-400 text-slate-900 hover:bg-amber-500'
                         : 'bg-sky-500 text-white hover:bg-sky-600'
                     " @click="handleContinue(item)">
-                      {{ item.status === "completed" ? "Kerjakan Ulang" : item.status === "in_progress" || item.status === "ongoing" ? "Lanjutkan Tryout" : "Mulai Tryout" }}
+                      {{ item.status === "completed" ? "Kerjakan Ulang" : isInProgressStatus(item.status) ? "Lanjutkan Tryout" : "Mulai Tryout" }}
                     </button>
                     <button v-if="item.status === 'completed'" type="button" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50" @click="handleResult(item)">
                       Tampilkan Hasil
@@ -440,8 +440,10 @@ const closeResult = () => {
   resultLoading.value = false;
 };
 
+const isInProgressStatus = (status) => ["started", "in_progress", "ongoing"].includes(status);
+
 const handleContinue = (item) => {
-  if (item.status === "in_progress" || item.status === "ongoing") {
+  if (isInProgressStatus(item.status)) {
     router.push({ name: "sesi-tryout", params: { id: item.id } });
   } else {
     router.push({ name: "tryout-persiapan", params: { id: item.id } });
@@ -517,7 +519,7 @@ const activeTryouts = computed(() => {
       lastTakenRaw: t.finished_at,
       lastTaken: t.finished_at
         ? `Selesai: ${new Date(t.finished_at).toLocaleString("id-ID")}`
-        : status === "in_progress" || status === "ongoing"
+        : isInProgressStatus(status)
         ? "Sedang dikerjakan"
         : "Belum dikerjakan",
     };
@@ -545,7 +547,7 @@ const nextSuggestion = computed(() => {
   if (!activeTryouts.value.length) return null;
   
   const inProgress = activeTryouts.value.find(
-    (t) => t.status === "in_progress" || t.status === "ongoing"
+    (t) => isInProgressStatus(t.status)
   );
   if (inProgress) {
     return {
@@ -580,13 +582,13 @@ const nextSuggestion = computed(() => {
 });
 
 const statusLabel = (status) => {
-  if (status === "in_progress" || status === "ongoing") return "Sedang dikerjakan";
+  if (isInProgressStatus(status)) return "Sedang dikerjakan";
   if (status === "completed") return "Selesai";
   return "Belum mulai";
 };
 
 const statusBadgeClass = (status) => {
-  if (status === "in_progress" || status === "ongoing") {
+  if (isInProgressStatus(status)) {
     return "bg-amber-100 text-amber-700";
   }
   if (status === "completed") {
