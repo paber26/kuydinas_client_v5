@@ -41,6 +41,12 @@ const routes = [
         component: () =>
           import("../views/PengerjaanTryout/PengerjaanTryout.vue"),
       },
+      {
+        path: "pengerjaantryout/:id/hasil",
+        name: "hasil-tryout",
+        component: () =>
+          import("../views/PengerjaanTryout/TryoutResult.vue"),
+      },
       // {
       //   path: "tryoutSkd",
       //   name: "tryoutskd",
@@ -64,12 +70,6 @@ const routes = [
         name: "sesi-tryout",
         component: () =>
           import("../views/PengerjaanTryout/TryoutSession.vue"),
-      },
-      {
-        path: "hasil",
-        name: "hasil-tryout",
-        component: () =>
-          import("../views/PengerjaanTryout/TryoutResult.vue"),
       },
     ],
   },
