@@ -1,71 +1,228 @@
 <template>
-  <div class="p-6 space-y-6">
-    <h1 class="text-2xl font-bold text-slate-800">Tryout Saya</h1>
+  <div class="min-h-full bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      
+      <div v-if="loading" class="text-center text-slate-500 py-10">
+        Memuat tryout...
+      </div>
+      
+      <template v-else>
+        <!-- HEADER + SUMMARY -->
+        <section
+          class="rounded-2xl bg-white shadow-sm border border-slate-100 p-4 sm:p-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+        >
+          <div>
+            <p
+              class="text-xs font-semibold uppercase tracking-wide text-emerald-600"
+            >
+              Pengerjaan Try Out SKD
+            </p>
+            <h1 class="mt-1 text-xl sm:text-2xl font-semibold text-slate-800">
+              Daftar Try Out Aktif Kamu
+            </h1>
+            <p class="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl">
+              Lanjutkan tryout yang sedang berjalan, ulangi paket yang nilainya
+              masih kurang, dan pantau progres latihanmu di Kuy Dinas.
+            </p>
+          </div>
 
-    <!-- Loading -->
-    <div v-if="loading" class="text-center text-slate-500">
-      Memuat tryout...
-    </div>
+          <div class="grid grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
+            <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
+              <p class="text-[11px] text-slate-500">Tryout aktif</p>
+              <p class="mt-1 text-lg font-semibold text-slate-800">
+                {{ stats.active }}
+              </p>
+            </div>
+            <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
+              <p class="text-[11px] text-slate-500">Tryout selesai</p>
+              <p class="mt-1 text-lg font-semibold text-slate-800">
+                {{ stats.completed }}
+              </p>
+            </div>
+            <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
+              <p class="text-[11px] text-slate-500">Rata-rata nilai</p>
+              <p class="mt-1 text-lg font-semibold text-slate-800">
+                {{ stats.avgScore }}
+              </p>
+            </div>
+          </div>
+        </section>
 
-    <!-- Empty -->
-    <div
-      v-else-if="tryouts.length === 0"
-      class="text-center text-slate-500 bg-white rounded-xl shadow p-10"
-    >
-      Belum ada tryout yang ditambahkan.
-    </div>
+        <!-- REKOMENDASI BERIKUTNYA -->
+        <section
+          v-if="nextSuggestion"
+          class="rounded-2xl bg-emerald-50 border border-emerald-100 px-4 py-3 sm:px-5 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
+            <p class="text-xs font-semibold text-emerald-700">
+              Rekomendasi langkah berikutnya
+            </p>
+            <p class="mt-1 text-sm font-semibold text-slate-800">
+              {{ nextSuggestion.name }}
+            </p>
+            <p class="mt-1 text-xs text-slate-600">
+              {{ nextSuggestion.reason }}
+            </p>
+          </div>
+          <div class="flex flex-col items-start sm:items-end gap-2 text-xs">
+            <p class="text-slate-500">
+              Durasi {{ nextSuggestion.duration }} menit •
+              {{ nextSuggestion.questionCount }} soal
+            </p>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600"
+              @click="handleContinue(nextSuggestion)"
+            >
+              🚀 Lanjutkan / Mulai Tryout
+            </button>
+          </div>
+        </section>
 
-    <!-- Tryout list -->
-    <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <div
-        v-for="tryout in tryouts"
-        :key="tryout.id"
-        class="bg-white border rounded-xl shadow p-5 flex flex-col justify-between"
-      >
-        <div>
-          <h2 class="font-semibold text-lg text-slate-800">
-            {{ tryout.title }}
+        <!-- LIST TRYOUT -->
+        <section class="space-y-3">
+          <h2 class="text-sm font-semibold text-slate-700">
+            Daftar Try Out Aktif
+            <span class="text-xs font-normal text-slate-500">
+              • {{ activeTryouts.length }} paket
+            </span>
           </h2>
 
-          <p class="text-sm text-slate-500 mt-1">
-            Durasi: {{ tryout.duration }} menit
-          </p>
+          <div v-if="activeTryouts.length" class="space-y-3">
+            <article
+              v-for="(item, index) in activeTryouts"
+              :key="item.id"
+              class="rounded-2xl border bg-white shadow-sm px-4 py-4 sm:px-5 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <!-- LEFT: INFO -->
+              <div class="flex-1 min-w-0">
+                <div
+                  class="flex items-center gap-2 text-[11px] text-slate-400 mb-1"
+                >
+                  <span>#{{ index + 1 }}</span>
+                  <span>•</span>
+                  <span>{{ item.lastTaken }}</span>
+                </div>
+                <h3
+                  class="text-sm sm:text-base font-semibold text-slate-900 truncate"
+                >
+                  {{ item.name }}
+                </h3>
+                <p class="mt-1 text-xs text-slate-500">
+                  Durasi {{ item.duration }} menit • {{ item.questionCount }} soal
+                </p>
 
-          <p class="mt-2 text-xs font-medium text-slate-500">
-            Status:
-            <span class="capitalize text-slate-700">{{ tryout.status }}</span>
-          </p>
-        </div>
+                <!-- PROGRESS -->
+                <div class="mt-3">
+                  <div
+                    class="flex justify-between text-[11px] text-slate-500 mb-1"
+                  >
+                    <span>Progres pengerjaan</span>
+                    <span>{{ item.progress }}%</span>
+                  </div>
+                  <div
+                    class="h-1.5 w-full rounded-full bg-slate-200 overflow-hidden"
+                  >
+                    <div
+                      class="h-full rounded-full"
+                      :class="
+                        item.status === 'completed'
+                          ? 'bg-emerald-500'
+                          : 'bg-amber-400'
+                      "
+                      :style="{ width: item.progress + '%' }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
 
-        <div class="mt-4 grid gap-3">
-          <button
-            @click="goToTryout(tryout.id)"
-            class="w-full py-2 rounded-lg text-white"
-            :class="
-              tryout.status === 'completed'
-                ? 'cursor-not-allowed bg-slate-400'
-                : 'bg-emerald-600 hover:bg-emerald-700'
-            "
-            :disabled="tryout.status === 'completed'"
+              <!-- RIGHT: STATUS + ACTION -->
+              <div
+                class="flex flex-col items-start sm:items-end gap-2 text-xs sm:text-sm"
+              >
+                <div class="flex flex-wrap gap-2 justify-end w-full">
+                  <span
+                    class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold"
+                    :class="statusBadgeClass(item.status)"
+                  >
+                    {{ statusLabel(item.status) }}
+                  </span>
+                  <span
+                    v-if="item.bestScore"
+                    class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-[11px] text-slate-700"
+                  >
+                    Nilai terbaik:
+                    <span class="ml-1 font-semibold">{{ item.bestScore }}</span>
+                  </span>
+                </div>
+
+                <div class="flex flex-wrap gap-2 justify-end w-full">
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center rounded-xl px-3 py-1.5 font-semibold shadow-sm transition"
+                    :class="
+                      item.status === 'completed'
+                        ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                        : item.status === 'in_progress' || item.status === 'ongoing'
+                        ? 'bg-amber-400 text-slate-900 hover:bg-amber-500'
+                        : 'bg-sky-500 text-white hover:bg-sky-600'
+                    "
+                    @click="handleContinue(item)"
+                  >
+                    {{
+                      item.status === "completed"
+                        ? "Kerjakan Ulang"
+                        : item.status === "in_progress" || item.status === "ongoing"
+                        ? "Lanjutkan Tryout"
+                        : "Mulai Tryout"
+                    }}
+                  </button>
+                  <button
+                    v-if="item.status === 'completed'"
+                    type="button"
+                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50"
+                    @click="handleResult(item)"
+                  >
+                    Tampilkan Hasil
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div
+            v-else
+            class="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-10 text-center text-sm text-slate-500"
           >
-            {{
-              tryout.status === "completed"
-                ? "Sudah Mengerjakan"
-                : "Lanjutkan Tryout"
-            }}
-          </button>
+            Belum ada tryout aktif saat ini. Coba pilih paket di menu
+            <span class="font-semibold">Promo Try Out</span> untuk mulai latihan.
+          </div>
+        </section>
 
-          <button
-            @click="openResult(tryout)"
-            class="w-full border border-slate-300 text-slate-700 py-2 rounded-lg hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-            :disabled="tryout.status !== 'completed'"
+        <!-- CTA LAINNYA -->
+        <section
+          class="rounded-2xl bg-white border border-slate-100 px-4 py-4 sm:px-5 sm:py-5 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+        >
+          <div>
+            <h3 class="text-sm font-semibold text-slate-800">
+              Mau tambah latihan?
+            </h3>
+            <p class="mt-1 text-xs sm:text-sm text-slate-600">
+              Ikuti tryout lain untuk memperbanyak jam terbang dan tingkatkan
+              peluang lulus SKD.
+            </p>
+          </div>
+          <router-link
+            to="/promotryout"
+            class="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-emerald-600"
           >
-            Lihat Hasil
-          </button>
-        </div>
-      </div>
+            Lihat Promo Try Out Lainnya
+          </router-link>
+        </section>
+      </template>
     </div>
 
+    <!-- RESULT MODAL -->
     <div
       v-if="selectedResult"
       class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4"
@@ -78,7 +235,6 @@
               {{ selectedResult.title }}
             </p>
           </div>
-
           <button
             @click="closeResult"
             class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100"
@@ -132,7 +288,8 @@
         </div>
       </div>
     </div>
-    <!-- Modal Success -->
+
+    <!-- SUCCESS PROMO MODAL -->
     <div
       v-if="showSuccessPopup"
       class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4"
@@ -159,7 +316,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import api from "../../services/api";
 import { TRYOUT_ENDPOINTS } from "../../services/endpoints";
@@ -184,38 +341,32 @@ const closeSuccessPopup = () => {
 
 const loadUserTryouts = async () => {
   try {
-    // endpoint yang menyimpan tryout milik user
     const res = await api.get(TRYOUT_ENDPOINTS.history);
-    tryouts.value = res.data.data || [];
-    console.log(res);
+    tryouts.value = res.data?.data || [];
   } catch (err) {
-    console.error("Gagal mengambil tryout user", err);
+    console.error("Gagal mengambil tryout user:", err);
   } finally {
     loading.value = false;
   }
 };
 
-const goToTryout = (id) => {
-  router.push({ name: "sesi-tryout", params: { id } });
-};
-
 const firstDefined = (...values) =>
   values.find((value) => value !== undefined && value !== null);
 
-const openResult = async (tryout) => {
+const handleResult = async (item) => {
   selectedResult.value = {
-    id: tryout.id,
-    title: tryout.title,
+    id: item.id,
+    title: item.name, // The new UI calls it item.name
     score: null,
     rank: null,
     correctAnswer: null,
-    finishedAt: tryout.finished_at || null,
+    finishedAt: item.lastTakenRaw || null, // Using the raw finished_at
   };
   resultLoading.value = true;
   resultError.value = "";
 
   try {
-    const res = await getResult(tryout.id);
+    const res = await getResult(item.id);
     const root = res.data || {};
     const source = root.data || root || {};
     const resultSource =
@@ -226,8 +377,8 @@ const openResult = async (tryout) => {
       {};
 
     selectedResult.value = {
-      id: tryout.id,
-      title: tryout.title,
+      id: item.id,
+      title: item.name,
       score: firstDefined(
         source.score,
         resultSource.score,
@@ -258,17 +409,16 @@ const openResult = async (tryout) => {
         root.correctAnswers,
         null,
       ),
-      finishedAt:
-        firstDefined(
-          source.finished_at,
-          source.finishedAt,
-          resultSource.finished_at,
-          resultSource.finishedAt,
-          root.finished_at,
-          root.finishedAt,
-          tryout.finished_at,
-          null,
-        ),
+      finishedAt: firstDefined(
+        source.finished_at,
+        source.finishedAt,
+        resultSource.finished_at,
+        resultSource.finishedAt,
+        root.finished_at,
+        root.finishedAt,
+        item.lastTakenRaw,
+        null,
+      ),
     };
   } catch (err) {
     console.error("Gagal mengambil hasil tryout:", err);
@@ -285,6 +435,14 @@ const closeResult = () => {
   resultLoading.value = false;
 };
 
+const handleContinue = (item) => {
+  if (item.status === "in_progress" || item.status === "ongoing") {
+    router.push({ name: "sesi-tryout", params: { id: item.id } });
+  } else {
+    router.push({ name: "tryout-persiapan", params: { id: item.id } });
+  }
+};
+
 onMounted(() => {
   loadUserTryouts();
   if (route.query.success === "promo_submitted") {
@@ -295,8 +453,113 @@ onMounted(() => {
 watch(
   () => route.query.refresh,
   () => {
-    // When navigated back from promo page with ?refresh=..., reload list
     loadUserTryouts();
   },
 );
+
+/* =========================================
+   COMPUTED PROPERTIES UNTUK TAMPILAN BARU 
+   ========================================= */
+
+const activeTryouts = computed(() => {
+  return tryouts.value.map((t) => {
+    const status = t.status || "not_started";
+    const title = t.title || t.tryout?.title || `Tryout #${t.id}`;
+    let progress = t.progress || 0;
+    
+    // Auto 100% jika selesai
+    if (status === "completed") {
+      progress = 100;
+    } else if (status === "not_started") {
+      progress = 0;
+    }
+
+    return {
+      id: t.tryout_id || t.id,
+      name: title,
+      duration: t.tryout?.duration || t.duration || 100,
+      questionCount: t.tryout?.questionCount || t.questionCount || 110,
+      status: status,
+      progress: progress,
+      bestScore: t.score || null,
+      lastTakenRaw: t.finished_at,
+      lastTaken: t.finished_at
+        ? `Selesai: ${new Date(t.finished_at).toLocaleString("id-ID")}`
+        : status === "in_progress" || status === "ongoing"
+        ? "Sedang dikerjakan"
+        : "Belum dikerjakan",
+    };
+  });
+});
+
+const stats = computed(() => {
+  const total = activeTryouts.value.length;
+  const completed = activeTryouts.value.filter(
+    (t) => t.status === "completed"
+  ).length;
+  const sumScore = activeTryouts.value
+    .filter((t) => t.bestScore)
+    .reduce((acc, t) => acc + Number(t.bestScore), 0);
+  const countScore = activeTryouts.value.filter((t) => t.bestScore).length;
+  const avgScore = countScore ? Math.round(sumScore / countScore) : "-";
+  return {
+    active: total,
+    completed,
+    avgScore,
+  };
+});
+
+const nextSuggestion = computed(() => {
+  if (!activeTryouts.value.length) return null;
+  
+  const inProgress = activeTryouts.value.find(
+    (t) => t.status === "in_progress" || t.status === "ongoing"
+  );
+  if (inProgress) {
+    return {
+      ...inProgress,
+      reason:
+        "Selesaikan dulu tryout yang sedang kamu kerjakan agar bisa melihat analisis nilai lengkap.",
+    };
+  }
+  
+  const lowestScoreList = [...activeTryouts.value]
+    .filter((t) => t.status === "completed" && t.bestScore !== null)
+    .sort((a, b) => (Number(a.bestScore) || 9999) - (Number(b.bestScore) || 9999));
+    
+  if (lowestScoreList.length > 0) {
+    return {
+      ...lowestScoreList[0],
+      reason:
+        "Coba kerjakan ulang paket dengan nilai terendah untuk memperbaiki skor dan memperkuat materi yang masih lemah.",
+    };
+  }
+  
+  // Kalau belum ada yang dikerjakan
+  const notStarted = activeTryouts.value.find((t) => t.status !== "completed");
+  if(notStarted) {
+    return {
+      ...notStarted,
+      reason: "Kamu punya tryout yang belum dikerjakan, yuk mulai latihan sekarang!"
+    };
+  }
+  
+  return null;
+});
+
+const statusLabel = (status) => {
+  if (status === "in_progress" || status === "ongoing") return "Sedang dikerjakan";
+  if (status === "completed") return "Selesai";
+  return "Belum mulai";
+};
+
+const statusBadgeClass = (status) => {
+  if (status === "in_progress" || status === "ongoing") {
+    return "bg-amber-100 text-amber-700";
+  }
+  if (status === "completed") {
+    return "bg-emerald-100 text-emerald-700";
+  }
+  return "bg-slate-100 text-slate-600";
+};
 </script>

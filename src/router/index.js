@@ -54,6 +54,12 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       {
+        path: "persiapan",
+        name: "tryout-persiapan",
+        component: () =>
+          import("../views/PengerjaanTryout/TryoutPreparation.vue"),
+      },
+      {
         path: "",
         name: "sesi-tryout",
         component: () =>
