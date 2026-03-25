@@ -217,7 +217,7 @@
                 v-for="option in currentQuestion.options"
                 :key="option.id"
                 class="group flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-white p-4 hover:border-violet-400"
-                :class="{ 'border-violet-500 bg-white ring-1 ring-violet-500': isSelected(option.label) }"
+                :class="isSelected(option.label) ? 'border-violet-600 bg-violet-600 ring-1 ring-violet-600' : ''"
               >
                 <div class="relative mt-1">
                   <input
@@ -230,13 +230,14 @@
 
                 <div
                   class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700 transition-colors group-hover:bg-violet-200"
-                  :class="{ 'bg-violet-600 text-white': isSelected(option.label) }"
+                  :class="isSelected(option.label) ? 'bg-white text-violet-700' : 'bg-violet-100 text-violet-700'"
                 >
                   {{ option.label }}
                 </div>
 
                 <p
-                  class="flex-1 pt-1.5 font-medium text-slate-700 transition-colors group-hover:text-slate-900"
+                  class="flex-1 pt-1.5 font-medium transition-colors"
+                  :class="isSelected(option.label) ? 'text-white' : 'text-slate-700 group-hover:text-slate-900'"
                   :style="{ fontSize: selectedFontSize }"
                 >
                   {{ option.text }}
