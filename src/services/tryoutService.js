@@ -34,8 +34,8 @@ export const getRemainingTime = async (id) => {
   }
 };
 
-export const getResult = (id) => {
-  return api.get(TRYOUT_ENDPOINTS.result(id));
+export const getResult = (id, params = {}) => {
+  return api.get(TRYOUT_ENDPOINTS.result(id), { params });
 };
 
 export const getHistory = () => {

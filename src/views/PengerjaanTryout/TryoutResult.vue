@@ -31,8 +31,8 @@
                 {{ summary.tryoutName }}
               </h1>
               <p class="mt-1 text-xs sm:text-sm text-slate-600">
-                Dikerjakan pada {{ summary.date }} • {{ summary.questionCount }} soal • Durasi
-                {{ summary.duration }} menit
+                Percobaan #{{ selectedAttemptNumber }} • Dikerjakan pada {{ summary.date }} •
+                {{ summary.questionCount }} soal • Durasi {{ summary.duration }} menit
               </p>
             </div>
 
@@ -55,22 +55,62 @@
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 text-center text-xs sm:text-sm">
             <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-3">
               <p class="text-[11px] text-slate-500">TWK</p>
-              <p class="mt-1 text-lg font-semibold text-slate-800">
-                {{ summary.twk }}
-              </p>
+              <p class="mt-1 text-lg font-semibold text-slate-800">{{ summary.twk }}</p>
             </div>
             <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-3">
               <p class="text-[11px] text-slate-500">TIU</p>
-              <p class="mt-1 text-lg font-semibold text-slate-800">
-                {{ summary.tiu }}
-              </p>
+              <p class="mt-1 text-lg font-semibold text-slate-800">{{ summary.tiu }}</p>
             </div>
             <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-3">
               <p class="text-[11px] text-slate-500">TKP</p>
-              <p class="mt-1 text-lg font-semibold text-slate-800">
-                {{ summary.tkp }}
+              <p class="mt-1 text-lg font-semibold text-slate-800">{{ summary.tkp }}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-5 space-y-5">
+          <div class="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <h2 class="text-sm font-semibold text-slate-800">Perkembangan Percobaan</h2>
+              <p class="mt-1 text-xs text-slate-500">
+                Gunakan riwayat attempt ini untuk melihat progres tryout dari percobaan pertama sampai terakhir.
               </p>
             </div>
+            <div class="grid grid-cols-2 gap-2 text-[11px] sm:grid-cols-3">
+              <div class="rounded-xl bg-slate-50 px-3 py-2 border border-slate-100">
+                <p class="text-slate-500">Total percobaan</p>
+                <p class="mt-1 text-base font-semibold text-slate-800">{{ attemptHistory.length }}</p>
+              </div>
+              <div class="rounded-xl bg-slate-50 px-3 py-2 border border-slate-100">
+                <p class="text-slate-500">Skor terbaik</p>
+                <p class="mt-1 text-base font-semibold text-slate-800">{{ developmentStats.bestScore }}</p>
+              </div>
+              <div class="rounded-xl bg-slate-50 px-3 py-2 border border-slate-100 col-span-2 sm:col-span-1">
+                <p class="text-slate-500">Perubahan skor</p>
+                <p
+                  class="mt-1 text-base font-semibold"
+                  :class="developmentStats.delta >= 0 ? 'text-emerald-600' : 'text-rose-600'"
+                >
+                  {{ developmentStats.delta >= 0 ? `+${developmentStats.delta}` : developmentStats.delta }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="text-xs text-slate-500">Pilih Percobaan</label>
+            <select
+              class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              :value="selectedAttemptNumber"
+              @change="selectAttempt(Number($event.target.value))"
+            >
+              <option
+                v-for="attempt in attemptHistory.slice().reverse()"
+                :key="attempt.attemptNumber"
+                :value="attempt.attemptNumber"
+              >
+                Percobaan {{ attempt.attemptNumber }} — Skor {{ attempt.totalScore }} ({{ attempt.finishedLabel }})
+              </option>
+            </select>
           </div>
         </section>
 
@@ -98,8 +138,8 @@
             <div>
               <h2 class="text-sm font-semibold text-slate-800">Ringkasan Jawaban</h2>
               <p class="mt-1 text-xs text-slate-500">
-                Klik nomor soal untuk langsung menuju pembahasan. Urutan kategori ditampilkan mulai dari TWK, TIU,
-                lalu TKP.
+                Klik nomor soal untuk langsung menuju pembahasan. Urutan kategori ditampilkan mulai dari TWK, TIU, lalu
+                TKP.
               </p>
             </div>
 
@@ -143,13 +183,19 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2 text-[11px]">
-                  <span class="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-emerald-700 border border-emerald-200">
+                  <span
+                    class="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-emerald-700 border border-emerald-200"
+                  >
                     {{ section.stats.correct }} benar
                   </span>
-                  <span class="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-rose-700 border border-rose-200">
+                  <span
+                    class="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-rose-700 border border-rose-200"
+                  >
                     {{ section.stats.wrong }} salah
                   </span>
-                  <span class="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-slate-600 border border-slate-200">
+                  <span
+                    class="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-slate-600 border border-slate-200"
+                  >
                     {{ section.stats.unanswered }} kosong
                   </span>
                 </div>
@@ -174,7 +220,9 @@
         <section class="space-y-5">
           <div>
             <h2 class="text-sm font-semibold text-slate-800">Detail Soal dan Pembahasan</h2>
-            <p class="mt-1 text-xs text-slate-500">Setiap bagian disusun berdasarkan kategori soal tryout.</p>
+            <p class="mt-1 text-xs text-slate-500">
+              Setiap bagian disusun berdasarkan kategori soal tryout untuk percobaan yang sedang dipilih.
+            </p>
           </div>
 
           <div v-for="section in groupedQuestionSections" :key="`detail-${section.category}`" class="space-y-3">
@@ -193,7 +241,10 @@
               :id="question.anchorId"
               :key="question.id"
               class="scroll-mt-24 rounded-2xl border shadow-sm px-4 py-4 sm:px-5 sm:py-4 text-xs sm:text-sm transition"
-              :class="[questionCardClass(question.status), activeQuestionId === question.id ? 'ring-2 ring-sky-200 border-sky-300' : '']"
+              :class="[
+                questionCardClass(question.status),
+                activeQuestionId === question.id ? 'ring-2 ring-sky-200 border-sky-300' : ''
+              ]"
             >
               <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex flex-wrap items-center gap-2">
@@ -217,9 +268,7 @@
                 </div>
               </div>
 
-              <p class="mt-3 text-slate-800 whitespace-pre-line">
-                {{ question.question }}
-              </p>
+              <p class="mt-3 text-slate-800 whitespace-pre-line">{{ question.question }}</p>
 
               <div class="mt-3 space-y-1.5">
                 <p class="text-[11px] font-semibold text-slate-600">Pilihan jawaban:</p>
@@ -265,9 +314,7 @@
                 class="mt-3 rounded-xl bg-white/70 border border-dashed border-slate-200 px-3 py-2"
               >
                 <p class="text-[11px] font-semibold text-slate-700">Pembahasan:</p>
-                <p class="mt-1 text-xs text-slate-700 whitespace-pre-line">
-                  {{ question.explanation }}
-                </p>
+                <p class="mt-1 text-xs text-slate-700 whitespace-pre-line">{{ question.explanation }}</p>
               </div>
             </article>
           </div>
@@ -279,10 +326,11 @@
 
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { getResult } from "../../services/tryoutService"
 
 const route = useRoute()
+const router = useRouter()
 
 const CATEGORY_ORDER = {
   TWK: 1,
@@ -304,13 +352,19 @@ const emptySummary = {
   tiu: 0,
   tkp: 0,
   totalScore: 0,
-  passed: false
+  passed: false,
+  correct: 0,
+  wrong: 0,
+  unanswered: 0
 }
+
+const selectedAttemptNumber = computed(() => Number(result.value?.attemptNumber || 1))
 
 const summary = computed(() => {
   const source = result.value?.summary || {}
   return {
-    tryoutName: source.tryoutName || source.tryout_name || "-",
+    tryoutName:
+      source.tryoutName || source.tryout_name || result.value?.tryout?.name || result.value?.tryout?.title || "-",
     date: formatDateTime(source.date),
     duration: Number(source.duration || 0),
     questionCount: Number(source.questionCount || source.question_count || 0),
@@ -318,7 +372,10 @@ const summary = computed(() => {
     tiu: Number(source.tiu || 0),
     tkp: Number(source.tkp || 0),
     totalScore: Number(source.totalScore || source.total_score || 0),
-    passed: Boolean(source.passed)
+    passed: Boolean(source.passed),
+    correct: Number(source.correct || 0),
+    wrong: Number(source.wrong || 0),
+    unanswered: Number(source.unanswered || 0)
   }
 })
 
@@ -358,19 +415,11 @@ const orderedQuestions = computed(() => {
     }))
 })
 
-const answerStats = computed(() => {
-  return orderedQuestions.value.reduce(
-    (stats, question) => {
-      stats[question.status] += 1
-      return stats
-    },
-    {
-      correct: 0,
-      wrong: 0,
-      unanswered: 0
-    }
-  )
-})
+const answerStats = computed(() => ({
+  correct: summary.value.correct,
+  wrong: summary.value.wrong,
+  unanswered: summary.value.unanswered
+}))
 
 const groupedQuestionSections = computed(() => {
   const grouped = orderedQuestions.value.reduce((sections, question) => {
@@ -403,20 +452,75 @@ const groupedQuestionSections = computed(() => {
     }))
 })
 
+const attemptHistory = computed(() => {
+  const history = Array.isArray(result.value?.attemptHistory) ? result.value.attemptHistory : []
+  const maxScore = Math.max(...history.map((attempt) => Number(attempt.totalScore || 0)), 1)
+
+  return history.map((attempt) => {
+    const totalScore = Number(attempt.totalScore || 0)
+
+    return {
+      attemptNumber: Number(attempt.attemptNumber || attempt.attempt_number || 0),
+      totalScore,
+      correct: Number(attempt.correct || 0),
+      wrong: Number(attempt.wrong || 0),
+      unanswered: Number(attempt.unanswered || 0),
+      passed: Boolean(attempt.passed),
+      finishedLabel: formatShortDate(
+        attempt.finishedAt || attempt.finished_at || attempt.startedAt || attempt.started_at
+      ),
+      barHeight: Math.max(Math.round((totalScore / maxScore) * 100), 18)
+    }
+  })
+})
+
+const developmentStats = computed(() => {
+  if (!attemptHistory.value.length) {
+    return {
+      bestScore: 0,
+      delta: 0
+    }
+  }
+
+  const scores = attemptHistory.value.map((attempt) => attempt.totalScore)
+  return {
+    bestScore: Math.max(...scores),
+    delta: scores[scores.length - 1] - scores[0]
+  }
+})
+
 async function loadResult() {
   loading.value = true
   error.value = ""
 
   try {
-    const response = await getResult(route.params.id)
+    const attempt = parsePositiveInt(route.query.attempt)
+    const response = await getResult(route.params.id, attempt ? { attempt } : {})
     const source = response.data?.data || response.data || {}
 
+    console.log("Hasil tryout:", source)
+    console.log("Summary source:", source.summary.tryout_name)
+
     result.value = {
+      attemptNumber: Number(source.attempt_number || attempt || 1),
+      tryout: source.tryout || source.data?.tryout || null,
       summary: {
         ...emptySummary,
         ...(source.summary || {})
       },
-      questions: Array.isArray(source.questions) ? source.questions : []
+      questions: Array.isArray(source.questions) ? source.questions : [],
+      attemptHistory: Array.isArray(source.attempt_history)
+        ? source.attempt_history.map((item) => ({
+            attemptNumber: Number(item.attempt_number || 0),
+            totalScore: Number(item.summary?.total_score || 0),
+            correct: Number(item.summary?.correct || 0),
+            wrong: Number(item.summary?.wrong || 0),
+            unanswered: Number(item.summary?.unanswered || 0),
+            passed: Boolean(item.summary?.passed),
+            finishedAt: item.finished_at || null,
+            startedAt: item.started_at || null
+          }))
+        : []
     }
 
     await nextTick()
@@ -431,14 +535,29 @@ async function loadResult() {
   }
 }
 
-function normalizeCategory(category) {
-  const normalized = String(category || "").trim().toUpperCase()
+function parsePositiveInt(value) {
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null
+}
 
-  if (CATEGORY_ORDER[normalized]) {
-    return normalized
+function selectAttempt(attemptNumber) {
+  if (!attemptNumber || attemptNumber === selectedAttemptNumber.value) {
+    return
   }
 
-  return normalized || "-"
+  router.replace({
+    query: {
+      ...route.query,
+      attempt: String(attemptNumber)
+    }
+  })
+}
+
+function normalizeCategory(category) {
+  const normalized = String(category || "")
+    .trim()
+    .toUpperCase()
+  return CATEGORY_ORDER[normalized] ? normalized : normalized || "-"
 }
 
 function getCategoryOrder(category) {
@@ -474,6 +593,23 @@ function formatDateTime(value) {
   return new Intl.DateTimeFormat("id-ID", {
     dateStyle: "long",
     timeStyle: "short"
+  }).format(parsed)
+}
+
+function formatShortDate(value) {
+  if (!value) {
+    return "-"
+  }
+
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) {
+    return "-"
+  }
+
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
   }).format(parsed)
 }
 
@@ -571,7 +707,7 @@ function scrollToQuestion(question) {
 onMounted(loadResult)
 
 watch(
-  () => route.params.id,
+  () => [route.params.id, route.query.attempt],
   () => {
     loadResult()
   }
