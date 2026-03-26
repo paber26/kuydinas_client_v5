@@ -21,9 +21,15 @@
           <article class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-1">
             <div class="flex items-center gap-4">
               <div
-                class="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-xl font-bold text-emerald-700"
+                class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-emerald-100 text-xl font-bold text-emerald-700"
               >
-                {{ initials }}
+                <img
+                  v-if="profile.image"
+                  :src="profile.image"
+                  alt="Foto profil"
+                  class="h-full w-full object-cover"
+                />
+                <span v-else>{{ initials }}</span>
               </div>
 
               <div>
@@ -226,7 +232,8 @@ const profile = ref({
   role: "user",
   coin_balance: 0,
   last_login: null,
-  provider: null
+  provider: null,
+  image: null
 })
 
 const form = ref({
@@ -258,7 +265,8 @@ function applyProfile(user) {
     role: user?.role ?? "user",
     coin_balance: Number(user?.coin_balance ?? 0),
     last_login: user?.last_login ?? null,
-    provider: user?.provider ?? null
+    provider: user?.provider ?? null,
+    image: user?.image ?? null
   }
 
   form.value = {
