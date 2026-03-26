@@ -32,6 +32,10 @@ export const TRYOUT_ENDPOINTS = {
   myRank: (id) => `/tryouts/${id}/my-rank`,
 };
 
+export const DASHBOARD_ENDPOINTS = {
+  summary: "/dashboard/summary",
+};
+
 export const WALLET_ENDPOINTS = {
   wallet: "/wallet",
   topupPackages: "/wallet/topup-packages",
