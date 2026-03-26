@@ -16,6 +16,11 @@ const routes = [
         component: () => import("../views/Dashboard/Dashboard.vue"),
       },
       {
+        path: "profil",
+        name: "profil",
+        component: () => import("../views/Profile/Profile.vue"),
+      },
+      {
         path: "dompet",
         name: "dompet",
         component: () => import("../views/Dompet/Dompet.vue"),
@@ -35,6 +40,11 @@ const routes = [
         name: "pengerjaantryout",
         component: () =>
           import("../views/PengerjaanTryout/PengerjaanTryout.vue"),
+      },
+      {
+        path: "peringkat",
+        name: "peringkat",
+        component: () => import("../views/Peringkat/Peringkat.vue"),
       },
       {
         path: "pengerjaantryout/:id/hasil",

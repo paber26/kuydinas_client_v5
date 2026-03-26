@@ -5,6 +5,10 @@ export const registerTryout = (id) => {
   return api.post(TRYOUT_ENDPOINTS.register(id));
 };
 
+export const getTryoutList = () => {
+  return api.get(TRYOUT_ENDPOINTS.list);
+};
+
 export const startTryout = (id) => {
   return api.post(TRYOUT_ENDPOINTS.start(id));
 };

@@ -105,6 +105,16 @@
         </p>
 
         <RouterLink
+          to="/profil"
+          @click="emitNavigate"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
+          active-class="bg-emerald-50 text-emerald-600 font-semibold"
+        >
+          <User class="h-5 w-5 text-slate-500" />
+          <span>Profil</span>
+        </RouterLink>
+
+        <RouterLink
           to="/dompet"
           @click="emitNavigate"
           class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
@@ -147,6 +157,7 @@ import {
   ClipboardCheck,
   Trophy,
   BookOpen,
+  User,
   Wallet,
   Flame,
   LogOut,

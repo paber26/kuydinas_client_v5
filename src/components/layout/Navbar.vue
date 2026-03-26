@@ -58,7 +58,7 @@
       </RouterLink>
 
       <!-- User Profile -->
-      <div class="flex items-center gap-3">
+      <RouterLink to="/profil" class="flex items-center gap-3">
         <div class="hidden flex-col items-end leading-tight sm:flex">
           <p class="text-[10px] font-black text-emerald-100 uppercase tracking-widest leading-none mb-1 opacity-70">Selamat Datang,</p>
           <p class="text-sm font-black tracking-tight">{{ user?.name || "User" }}</p>
@@ -71,13 +71,13 @@
             class="h-full w-full object-cover transition-transform group-hover:scale-110"
           />
         </div>
-      </div>
+      </RouterLink>
     </div>
   </header>
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue"
+import { onMounted, onBeforeUnmount, ref, computed } from "vue"
 import { useRoute } from "vue-router"
 import api from "../../services/api"
 import { AUTH_ENDPOINTS, WALLET_ENDPOINTS } from "../../services/endpoints"
@@ -104,6 +104,7 @@ const wallet = ref(null)
 const pageTitle = computed(() => {
   const titles = {
     dashboard: "Beranda Dashboard",
+    profil: "Profil Akun",
     pengerjaantryout: "Daftar Paket Tryout",
     "hasil-tryout": "Hasil & Pembahasan",
     peringkat: "Peringkat Nasional",
@@ -132,8 +133,24 @@ const getWallet = async () => {
   }
 }
 
+const handleProfileUpdated = (event) => {
+  if (event?.detail) {
+    user.value = {
+      ...user.value,
+      ...event.detail,
+    }
+  } else {
+    getUser()
+  }
+}
+
 onMounted(() => {
   getUser()
   getWallet()
+  window.addEventListener("user-profile-updated", handleProfileUpdated)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("user-profile-updated", handleProfileUpdated)
 })
 </script>

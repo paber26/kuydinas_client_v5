@@ -5,6 +5,7 @@ export const AUTH_ENDPOINTS = {
     register: "/user/register",
     login: "/user/login",
     me: "/user/me",
+    profile: "/user/profile",
     logout: "/user/logout",
     googleRedirect: "/user/auth/google/redirect",
     googleCallback: "/user/auth/google/callback",
