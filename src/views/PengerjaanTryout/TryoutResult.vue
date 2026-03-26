@@ -105,17 +105,39 @@
           </div>
           <div v-if="attemptHistory.length > 1" class="mt-4">
             <p class="text-[11px] text-slate-500 mb-2">Grafik perkembangan skor</p>
-            <div v-if="attemptHistory.length > 1" class="mt-4">
-              <p class="text-[11px] text-slate-500 mb-2">Grafik perkembangan skor</p>
+            <svg viewBox="0 0 100 60" class="w-full h-40">
+              <!-- Line -->
+              <polyline fill="none" stroke="#10b981" stroke-width="2" :points="lineChartPoints" />
 
-              <svg viewBox="0 0 100 40" class="w-full h-24">
-                <!-- Line -->
-                <polyline fill="none" stroke="#10b981" stroke-width="2" :points="lineChartPoints" />
+              <!-- Dots -->
+              <circle v-for="(p, i) in lineChartDots" :key="'dot-' + i" :cx="p.x" :cy="p.y" r="1.8" fill="#10b981" />
 
-                <!-- Dots -->
-                <circle v-for="(p, i) in lineChartDots" :key="'dot-' + i" :cx="p.x" :cy="p.y" r="1.8" fill="#10b981" />
-              </svg>
-            </div>
+              <!-- Score labels -->
+              <text
+                v-for="(a, i) in attemptHistory"
+                :key="'label-' + i"
+                :x="lineChartDots[i]?.x"
+                :y="(lineChartDots[i]?.y || 0) - 5"
+                text-anchor="middle"
+                font-size="4.5"
+                font-weight="600"
+                fill="#334155"
+              >
+                {{ a.totalScore }}
+              </text>
+              <!-- X-axis attempt labels -->
+              <text
+                v-for="(a, i) in attemptHistory"
+                :key="'x-label-' + i"
+                :x="lineChartDots[i]?.x"
+                y="58"
+                text-anchor="middle"
+                font-size="3.5"
+                fill="#64748b"
+              >
+                {{ "Percobaan " + a.attemptNumber }}
+              </text>
+            </svg>
           </div>
         </section>
 
@@ -580,7 +602,7 @@ const lineChartPoints = computed(() => {
   return data
     .map((d, i) => {
       const x = (i / (data.length - 1 || 1)) * 100
-      const y = 40 - (d.totalScore / max) * 35
+      const y = 60 - (d.totalScore / max) * 50
       return `${x},${y}`
     })
     .join(" ")
@@ -594,7 +616,7 @@ const lineChartDots = computed(() => {
 
   return data.map((d, i) => ({
     x: (i / (data.length - 1 || 1)) * 100,
-    y: 40 - (d.totalScore / max) * 35
+    y: 60 - (d.totalScore / max) * 50
   }))
 })
 
