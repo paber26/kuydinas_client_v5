@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <div class="flex-1 text-center text-slate-500 py-10" v-if="loading">Memuat tryout...</div>
       <div class="flex-1" v-else>
         <!-- HEADER + SUMMARY -->
         <section
-          class="rounded-2xl bg-white shadow-sm border border-slate-100 p-4 sm:p-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+          class="rounded-2xl bg-white/80 backdrop-blur shadow-sm border border-slate-200 p-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
         >
           <div>
             <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Pengerjaan Try Out SKD</p>
@@ -17,19 +17,19 @@
           </div>
 
           <div class="grid grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
-            <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
+            <div class="rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition px-3 py-2">
               <p class="text-[11px] text-slate-500">Tryout aktif</p>
               <p class="mt-1 text-lg font-semibold text-slate-800">
                 {{ stats.active }}
               </p>
             </div>
-            <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
+            <div class="rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition px-3 py-2">
               <p class="text-[11px] text-slate-500">Tryout selesai</p>
               <p class="mt-1 text-lg font-semibold text-slate-800">
                 {{ stats.completed }}
               </p>
             </div>
-            <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
+            <div class="rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition px-3 py-2">
               <p class="text-[11px] text-slate-500">Rata-rata nilai</p>
               <p class="mt-1 text-lg font-semibold text-slate-800">
                 {{ stats.avgScore }}
@@ -41,7 +41,7 @@
         <!-- REKOMENDASI BERIKUTNYA -->
         <section
           v-if="nextSuggestion"
-          class="rounded-2xl bg-emerald-50 border border-emerald-100 px-4 py-3 sm:px-5 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+          class="rounded-2xl bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shadow-sm"
         >
           <div>
             <p class="text-xs font-semibold text-emerald-700">Rekomendasi langkah berikutnya</p>
@@ -58,7 +58,7 @@
             </p>
             <button
               type="button"
-              class="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600"
+              class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 active:scale-95 transition"
               @click="handleContinue(nextSuggestion)"
             >
               🚀 Lanjutkan / Mulai Tryout
@@ -77,7 +77,7 @@
             <article
               v-for="(item, index) in activeTryouts"
               :key="item.id"
-              class="rounded-2xl border bg-white shadow-sm px-4 py-4 sm:px-5 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+              class="rounded-2xl border border-slate-200 bg-white shadow-sm px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between hover:shadow-md hover:-translate-y-[1px] transition"
             >
               <!-- LEFT: INFO -->
               <div class="flex-1 min-w-0">
@@ -99,9 +99,9 @@
                     <span>Progres pengerjaan</span>
                     <span>{{ item.progress }}%</span>
                   </div>
-                  <div class="h-1.5 w-full rounded-full bg-slate-200 overflow-hidden">
+                  <div class="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
                     <div
-                      class="h-full rounded-full"
+                      class="h-full rounded-full transition-all duration-500"
                       :class="item.status === 'completed' ? 'bg-emerald-500' : 'bg-amber-400'"
                       :style="{ width: item.progress + '%' }"
                     ></div>
@@ -113,7 +113,7 @@
               <div class="flex flex-col items-start sm:items-end gap-2 text-xs sm:text-sm">
                 <div class="flex flex-wrap gap-2 justify-end w-full">
                   <span
-                    class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold"
+                    class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold shadow-sm"
                     :class="statusBadgeClass(item.status)"
                   >
                     {{ statusLabel(item.status) }}
@@ -130,7 +130,7 @@
                 <div class="flex flex-wrap gap-2 justify-end w-full">
                   <button
                     type="button"
-                    class="inline-flex items-center justify-center rounded-xl px-3 py-1.5 font-semibold shadow-sm transition"
+                    class="inline-flex items-center justify-center rounded-xl px-4 py-2 font-semibold shadow-sm transition active:scale-95"
                     :class="
                       item.status === 'completed'
                         ? 'bg-emerald-500 text-white hover:bg-emerald-600'
@@ -151,13 +151,13 @@
                   <router-link
                     v-if="item.status === 'completed'"
                     :to="{ name: 'hasil-tryout', params: { id: item.id } }"
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50"
+                    class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 hover:bg-slate-100 transition"
                   >
                     Tampilkan Hasil
                   </router-link>
                   <button
                     type="button"
-                    class="inline-flex items-center justify-center rounded-xl bg-red-500 text-white px-3 py-1.5 font-semibold hover:bg-red-600"
+                    class="inline-flex items-center justify-center rounded-xl bg-red-500 text-white px-4 py-2 font-semibold hover:bg-red-600 active:scale-95 transition"
                     @click="openEndConfirm(item)"
                     v-if="item.status !== 'completed'"
                   >
@@ -170,7 +170,7 @@
 
           <div
             v-else
-            class="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-10 text-center text-sm text-slate-500"
+            class="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center text-sm text-slate-500 shadow-sm"
           >
             Belum ada tryout aktif saat ini. Coba pilih paket di menu
             <span class="font-semibold">Promo Try Out</span>
@@ -198,7 +198,7 @@
 
         <!-- CTA LAINNYA -->
         <section
-          class="rounded-2xl bg-white border border-slate-100 px-4 py-4 sm:px-5 sm:py-5 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+          class="rounded-2xl bg-gradient-to-r from-white to-slate-50 border border-slate-200 px-5 py-5 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-sm"
         >
           <div>
             <h3 class="text-sm font-semibold text-slate-800">Mau tambah latihan?</h3>
@@ -217,8 +217,26 @@
     </div>
 
     <!-- SUCCESS PROMO MODAL -->
-    <div v-if="showSuccessPopup" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
-      <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl text-center">
+    <div
+      v-if="showSuccessPopup"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+    >
+      <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl text-center animate-scaleIn">
+        <style>
+          @keyframes scaleIn {
+            from {
+              transform: scale(0.95);
+              opacity: 0;
+            }
+            to {
+              transform: scale(1);
+              opacity: 1;
+            }
+          }
+          .animate-scaleIn {
+            animation: scaleIn 0.2s ease-out;
+          }
+        </style>
         <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 mb-4">
           <svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
