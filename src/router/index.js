@@ -16,11 +16,6 @@ const routes = [
         component: () => import("../views/Dashboard/Dashboard.vue"),
       },
       {
-        path: "materiskd",
-        name: "materiskd",
-        component: () => import("../views/MateriSkd/Materiskd.vue"),
-      },
-      {
         path: "dompet",
         name: "dompet",
         component: () => import("../views/Dompet/Dompet.vue"),
@@ -53,6 +48,12 @@ const routes = [
       //   component: () => import("../views/TryoutSkd/TryoutSkd.vue"),
       // },
     ],
+  },
+  {
+    path: "/materiskd",
+    name: "materiskd",
+    component: () => import("../views/MateriSkd/Materiskd.vue"),
+    meta: { requiresAuth: true },
   },
   {
     path: "/pengerjaantryout/:id",

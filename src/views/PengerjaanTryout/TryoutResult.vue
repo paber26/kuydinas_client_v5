@@ -340,8 +340,21 @@
                 v-if="question.explanation"
                 class="mt-3 rounded-xl bg-white/70 border border-dashed border-slate-200 px-3 py-2"
               >
-                <p class="text-[11px] font-semibold text-slate-700">Pembahasan:</p>
-                <p class="mt-1 text-xs text-slate-700 whitespace-pre-line">{{ question.explanation }}</p>
+                <div class="flex items-start justify-between gap-4">
+                  <div class="flex-1">
+                    <p class="text-[11px] font-semibold text-slate-700">Pembahasan:</p>
+                    <p class="mt-1 text-xs text-slate-700 whitespace-pre-line">{{ question.explanation }}</p>
+                  </div>
+                  <router-link 
+                    :to="{ name: 'materiskd', query: { category: question.category } }"
+                    class="shrink-0 mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100 transition-all text-[10px] font-black uppercase tracking-widest"
+                  >
+                    Pelajari Materi
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </router-link>
+                </div>
               </div>
             </article>
           </div>
