@@ -23,8 +23,8 @@
       </section>
 
       <template v-else>
-        <section class="rounded-2xl bg-white shadow-sm border border-slate-100 p-4 sm:p-5 flex flex-col gap-4">
-          <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <section class="rounded-2xl bg-white shadow-sm border border-slate-100 p-4 sm:p-5 flex flex-col gap-5">
+          <div class="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
             <div>
               <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Hasil Try Out SKD</p>
               <h1 class="mt-1 text-xl sm:text-2xl font-semibold text-slate-800">
@@ -35,17 +35,16 @@
                 {{ summary.questionCount }} soal • Durasi {{ summary.duration }} menit
               </p>
             </div>
-
-            <div class="flex flex-wrap gap-3 text-xs sm:text-sm">
-              <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2 min-w-[128px]">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:flex gap-3 text-xs sm:text-sm w-full xl:w-auto">
+              <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-3 w-full xl:min-w-[128px]">
                 <p class="text-[11px] text-slate-500">Total Skor</p>
                 <p class="mt-1 text-xl font-semibold text-slate-900">
                   {{ summary.totalScore }}
                 </p>
               </div>
-              <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2 min-w-[128px]">
+              <div class="rounded-xl bg-slate-50 border border-slate-100 px-3 py-3 w-full xl:min-w-[128px]">
                 <p class="text-[11px] text-slate-500">Status</p>
-                <p class="mt-1 text-xs font-semibold" :class="summary.passed ? 'text-emerald-600' : 'text-rose-600'">
+                <p class="mt-1 text-sm font-semibold" :class="summary.passed ? 'text-emerald-600' : 'text-rose-600'">
                   {{ summary.passed ? "Lulus" : "Belum Lulus" }}
                 </p>
               </div>
@@ -76,7 +75,7 @@
                 Gunakan riwayat attempt ini untuk melihat progres tryout dari percobaan pertama sampai terakhir.
               </p>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-[11px] sm:grid-cols-3">
+            <div class="grid grid-cols-2 gap-2 text-[11px]">
               <div class="rounded-xl bg-slate-50 px-3 py-2 border border-slate-100">
                 <p class="text-slate-500">Total percobaan</p>
                 <p class="mt-1 text-base font-semibold text-slate-800">{{ attemptHistory.length }}</p>
@@ -84,15 +83,6 @@
               <div class="rounded-xl bg-slate-50 px-3 py-2 border border-slate-100">
                 <p class="text-slate-500">Skor terbaik</p>
                 <p class="mt-1 text-base font-semibold text-slate-800">{{ developmentStats.bestScore }}</p>
-              </div>
-              <div class="rounded-xl bg-slate-50 px-3 py-2 border border-slate-100 col-span-2 sm:col-span-1">
-                <p class="text-slate-500">Perubahan skor</p>
-                <p
-                  class="mt-1 text-base font-semibold"
-                  :class="developmentStats.delta >= 0 ? 'text-emerald-600' : 'text-rose-600'"
-                >
-                  {{ developmentStats.delta >= 0 ? `+${developmentStats.delta}` : developmentStats.delta }}
-                </p>
               </div>
             </div>
           </div>
@@ -108,9 +98,24 @@
                 :key="attempt.attemptNumber"
                 :value="attempt.attemptNumber"
               >
+                {{ attempt.attemptNumber === selectedAttemptNumber ? "⭐ " : "" }}
                 Percobaan {{ attempt.attemptNumber }} — Skor {{ attempt.totalScore }} ({{ attempt.finishedLabel }})
               </option>
             </select>
+          </div>
+          <div v-if="attemptHistory.length > 1" class="mt-4">
+            <p class="text-[11px] text-slate-500 mb-2">Grafik perkembangan skor</p>
+            <div v-if="attemptHistory.length > 1" class="mt-4">
+              <p class="text-[11px] text-slate-500 mb-2">Grafik perkembangan skor</p>
+
+              <svg viewBox="0 0 100 40" class="w-full h-24">
+                <!-- Line -->
+                <polyline fill="none" stroke="#10b981" stroke-width="2" :points="lineChartPoints" />
+
+                <!-- Dots -->
+                <circle v-for="(p, i) in lineChartDots" :key="'dot-' + i" :cx="p.x" :cy="p.y" r="1.8" fill="#10b981" />
+              </svg>
+            </div>
           </div>
         </section>
 
@@ -321,6 +326,67 @@
         </section>
       </template>
     </div>
+    <!-- FLOATING ACTION BUTTONS -->
+    <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+      <!-- Scroll to top -->
+      <button
+        @click="scrollToTop"
+        class="h-10 w-10 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg hover:bg-slate-800 transition"
+        title="Kembali ke atas"
+      >
+        ↑
+      </button>
+
+      <!-- Open question list -->
+      <button
+        @click="showQuestionList = true"
+        class="h-10 w-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg hover:bg-emerald-700 transition"
+        title="Daftar soal"
+      >
+        ☰
+      </button>
+    </div>
+
+    <!-- QUESTION LIST MODAL -->
+    <div
+      v-if="showQuestionList"
+      class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center px-4"
+    >
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-5 max-h-[80vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-slate-800">Daftar Soal</h3>
+          <button @click="showQuestionList = false" class="text-slate-500 hover:text-slate-700">✕</button>
+        </div>
+
+        <div class="space-y-4">
+          <div v-for="section in groupedQuestionSections" :key="'modal-section-' + section.category">
+            <!-- Category header -->
+            <div class="flex items-center justify-between mb-2">
+              <span
+                class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                :class="getCategoryBadgeClass(section.category)"
+              >
+                {{ section.category }}
+              </span>
+              <span class="text-[11px] text-slate-500">{{ section.questions.length }} soal</span>
+            </div>
+
+            <!-- Questions grid -->
+            <div class="grid grid-cols-5 gap-2">
+              <button
+                v-for="q in section.questions"
+                :key="'modal-q-' + q.id"
+                @click="handleSelectQuestion(q)"
+                class="h-9 rounded-lg text-xs font-semibold border transition"
+                :class="questionButtonClass(q)"
+              >
+                {{ q.displayNumber }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -343,6 +409,8 @@ const error = ref("")
 const result = ref(null)
 const activeQuestionId = ref(null)
 
+const showQuestionList = ref(false)
+
 const emptySummary = {
   tryoutName: "-",
   date: "-",
@@ -364,7 +432,7 @@ const summary = computed(() => {
   const source = result.value?.summary || {}
   return {
     tryoutName:
-      source.tryoutName || source.tryout_name || result.value?.tryout?.name || result.value?.tryout?.title || "-",
+      source.tryout_name ?? source.tryoutName ?? result.value?.tryout?.title ?? result.value?.tryout?.name ?? "-",
     date: formatDateTime(source.date),
     duration: Number(source.duration || 0),
     questionCount: Number(source.questionCount || source.question_count || 0),
@@ -475,18 +543,59 @@ const attemptHistory = computed(() => {
 })
 
 const developmentStats = computed(() => {
-  if (!attemptHistory.value.length) {
+  const history = attemptHistory.value
+
+  if (!history.length) {
     return {
       bestScore: 0,
       delta: 0
     }
   }
 
-  const scores = attemptHistory.value.map((attempt) => attempt.totalScore)
+  const scores = history.map((a) => Number(a.totalScore || 0))
+
+  let delta = 0
+
+  if (scores.length >= 2) {
+    const last = scores[scores.length - 1]
+    const prev = scores[scores.length - 2]
+
+    if (Number.isFinite(last) && Number.isFinite(prev)) {
+      delta = last - prev
+    }
+  }
+
   return {
     bestScore: Math.max(...scores),
-    delta: scores[scores.length - 1] - scores[0]
+    delta
   }
+})
+
+const lineChartPoints = computed(() => {
+  const data = attemptHistory.value
+  if (!data.length) return ""
+
+  const max = Math.max(...data.map((d) => d.totalScore), 1)
+
+  return data
+    .map((d, i) => {
+      const x = (i / (data.length - 1 || 1)) * 100
+      const y = 40 - (d.totalScore / max) * 35
+      return `${x},${y}`
+    })
+    .join(" ")
+})
+
+const lineChartDots = computed(() => {
+  const data = attemptHistory.value
+  if (!data.length) return []
+
+  const max = Math.max(...data.map((d) => d.totalScore), 1)
+
+  return data.map((d, i) => ({
+    x: (i / (data.length - 1 || 1)) * 100,
+    y: 40 - (d.totalScore / max) * 35
+  }))
 })
 
 async function loadResult() {
@@ -497,9 +606,6 @@ async function loadResult() {
     const attempt = parsePositiveInt(route.query.attempt)
     const response = await getResult(route.params.id, attempt ? { attempt } : {})
     const source = response.data?.data || response.data || {}
-
-    console.log("Hasil tryout:", source)
-    console.log("Summary source:", source.summary.tryout_name)
 
     result.value = {
       attemptNumber: Number(source.attempt_number || attempt || 1),
@@ -701,6 +807,17 @@ function scrollToQuestion(question) {
   target.scrollIntoView({
     behavior: "smooth",
     block: "start"
+  })
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" })
+}
+
+function handleSelectQuestion(question) {
+  showQuestionList.value = false
+  nextTick(() => {
+    scrollToQuestion(question)
   })
 }
 
