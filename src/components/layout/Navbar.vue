@@ -35,7 +35,7 @@
 
       <div class="flex flex-col leading-tight">
         <p class="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-200/80">Website Kuy Dinas</p>
-        <h1 class="text-base font-black sm:text-lg md:text-xl tracking-tight leading-none">Dashboard Belajar</h1>
+        <h1 class="text-base font-black sm:text-lg md:text-xl tracking-tight leading-none">{{ pageTitle }}</h1>
       </div>
     </div>
 
@@ -77,10 +77,13 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue"
+import { onMounted, ref, computed } from "vue"
+import { useRoute } from "vue-router"
 import api from "../../services/api"
 import { AUTH_ENDPOINTS, WALLET_ENDPOINTS } from "../../services/endpoints"
 import { Wallet } from "lucide-vue-next"
+
+const route = useRoute()
 
 defineProps({
   isMobileSidebarOpen: {
@@ -97,6 +100,19 @@ defineEmits(["toggle-sidebar"])
 
 const user = ref(null)
 const wallet = ref(null)
+
+const pageTitle = computed(() => {
+  const titles = {
+    dashboard: "Beranda Dashboard",
+    pengerjaantryout: "Daftar Paket Tryout",
+    "hasil-tryout": "Hasil & Pembahasan",
+    peringkat: "Peringkat Nasional",
+    dompet: "Dompet & Transaksi",
+    promotryout: "Promo & Penawaran",
+    materiskd: "Materi SKD & Pembahasan",
+  }
+  return titles[route.name] || "Dashboard Belajar"
+})
 
 const getUser = async () => {
   try {
