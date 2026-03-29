@@ -100,108 +100,13 @@
       </section>
 
       <!-- TOP UP PACKAGES -->
-      <section class="space-y-3">
-        <div class="flex items-center justify-between gap-2">
-          <h2 class="text-sm font-semibold text-slate-800">
-            Pilih Paket Top Up
-          </h2>
-          <p class="text-[11px] text-slate-500">
-            Semakin besar paket, semakin hemat koin per rupiah.
-          </p>
-        </div>
-
-        <div
-          v-if="topupPackagesLoading"
-          class="rounded-2xl border border-slate-100 bg-white px-4 py-6 text-sm text-slate-500 shadow-sm"
-        >
-          Memuat paket top up...
-        </div>
-
-        <div
-          v-else-if="topupPackagesError"
-          class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-6 text-sm text-rose-600 shadow-sm"
-        >
-          {{ topupPackagesError }}
-        </div>
-
-        <div
-          v-else-if="packages.length === 0"
-          class="rounded-2xl border border-slate-100 bg-white px-4 py-6 text-sm text-slate-500 shadow-sm"
-        >
-          Belum ada paket top up yang tersedia.
-        </div>
-
-        <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <article
-            v-for="pkg in packages"
-            :key="pkg.id"
-            class="relative rounded-2xl border bg-white px-4 py-4 shadow-sm flex flex-col gap-3"
-            :class="
-              pkg.highlight
-                ? 'border-emerald-300 ring-1 ring-emerald-200'
-                : 'border-slate-100'
-            "
-          >
-            <div class="flex items-start justify-between gap-2">
-              <div>
-                <p class="text-xs text-slate-500">Paket {{ pkg.id }}</p>
-                <p class="mt-1 text-lg font-semibold text-slate-900">
-                  {{ pkg.coins.toLocaleString("id-ID") }} koin
-                </p>
-              </div>
-              <span
-                v-if="pkg.tag"
-                class="inline-flex items-center rounded-full px-2 py-[2px] text-[10px] font-semibold"
-                :class="
-                  pkg.tag === 'Paling hemat'
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : 'bg-amber-100 text-amber-700'
-                "
-              >
-                {{ pkg.tag }}
-              </span>
-            </div>
-
-            <div class="text-xs text-slate-600">
-              <p>
-                Harga:
-                <span class="font-semibold"
-                  >Rp{{ pkg.price.toLocaleString("id-ID") }}</span
-                >
-              </p>
-              <p v-if="pkg.bonus">
-                Bonus:
-                <span class="font-semibold"
-                  >{{ pkg.bonus.toLocaleString("id-ID") }} koin</span
-                >
-              </p>
-              <p
-                v-if="pkg.effectiveRate"
-                class="mt-1 text-[11px] text-slate-500"
-              >
-                ~ Rp{{ pkg.effectiveRate }}/100 koin
-              </p>
-            </div>
-
-            <button
-              type="button"
-              class="mt-auto inline-flex items-center justify-center rounded-xl bg-emerald-500 px-3 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-300"
-              :disabled="topupSubmittingId === pkg.id"
-              @click="handleSelectPackage(pkg)"
-            >
-              {{
-                topupSubmittingId === pkg.id
-                  ? "Memproses..."
-                  : `Top Up Paket ${pkg.id}`
-              }}
-            </button>
-          </article>
-        </div>
-
-        <p class="mt-1 text-[11px] text-slate-500">
-          Setelah memilih paket, pembayaran akan dibuka melalui Midtrans Snap.
-        </p>
-      </section>
+      <TopupPackages
+        :packages="packages"
+        :loading="topupPackagesLoading"
+        :error="topupPackagesError"
+        :submitting-id="topupSubmittingId"
+        @select="handleSelectPackage"
+      />
 
       <!-- REDEEM TRYOUT -->
       <section class="space-y-3">
@@ -391,6 +296,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import TopupPackages from "./TopupPackages.vue";
 import {
   createWalletTopup,
   getRedeemableTryouts,
@@ -642,7 +548,9 @@ const normalizeTopupPackage = (item, index) => {
   const coins = Number(
     item.coins ?? item.coin_amount ?? item.amount ?? item.quantity ?? 0,
   );
-  const bonus = Number(item.bonus ?? item.bonus_coins ?? 0);
+  const bonus = Number(
+    item.bonus ?? item.bonus_coin ?? item.coin_bonus ?? item.bonus_coins ?? 0,
+  );
   const totalCoins = Number(item.total_coins ?? coins + bonus);
   const price = Number(
     item.price ?? item.amount_rupiah ?? item.nominal ?? item.value ?? 0,
@@ -816,8 +724,7 @@ const openMidtransSnap = async (snapToken, redirectUrl = "") => {
   return new Promise((resolve, reject) => {
     snap.pay(snapToken, {
       onSuccess: async () => {
-        const balanceChanged =
-          await refreshWalletUntilChanged(previousBalance);
+        const balanceChanged = await refreshWalletUntilChanged(previousBalance);
         const latestTopupDetail = await checkLatestTopupStatus();
         const latestStatus = String(
           latestTopupDetail?.status ||

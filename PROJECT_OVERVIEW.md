@@ -27,6 +27,8 @@ Dokumen ini merangkum struktur, fitur utama, dan flow aplikasi `kuydinas_client_
   Panduan setup lokal integrasi Midtrans.
 - `VERCEL_DEPLOY.md`
   Catatan deployment ke Vercel.
+- `vercel.json`
+  Konfigurasi rewrite untuk SPA di Vercel agar semua path diarahkan ke root (`/`), mencegah 404 saat reload pada route non-root.
 
 ### Entry Frontend
 
@@ -215,6 +217,7 @@ Kemampuan saat ini:
 File utama:
 
 - `src/views/Dompet/Dompet.vue`
+- `src/views/Dompet/TopupPackages.vue`
 - `src/services/walletService.js`
 - `src/services/endpoints.js`
 - `MIDTRANS_LOCAL_SETUP.md`
@@ -225,7 +228,8 @@ Kemampuan saat ini:
 - Menampilkan estimasi jumlah tryout premium yang bisa dibeli dari saldo saat ini.
 - Menampilkan promo event di halaman dompet.
 - Mengambil dan menampilkan paket top up dari endpoint `/wallet/topup-packages`.
-- Normalisasi data paket top up dari berbagai kemungkinan format response backend.
+- Normalisasi data paket top up dari berbagai kemungkinan format response backend, termasuk dukungan field bonus:
+  - `bonus`, `bonus_coins`, `bonus_coin`, atau `coin_bonus`.
 - Membuat transaksi top up melalui endpoint `/wallet/topup/create`.
 - Membuka pembayaran Midtrans Snap jika backend mengembalikan `snap_token`.
 - Fallback ke `redirect_url` jika Snap tidak tersedia atau backend memakai redirect flow.
@@ -236,6 +240,13 @@ Kemampuan saat ini:
 - Menampilkan status kecukupan saldo untuk setiap tryout premium.
 - Menampilkan riwayat transaksi koin pada halaman dompet.
 - Menampilkan feedback sukses/error ke user selama proses wallet.
+
+Komponen terkait:
+
+- `TopupPackages.vue`
+  - Bertanggung jawab menampilkan grid kartu paket top up.
+  - Props: `packages`, `loading`, `error`, `submittingId`.
+  - Emit: `select` ketika user memilih paket untuk diproses pembayaran.
 
 ## Service Layer
 
@@ -357,12 +368,15 @@ Bagian ini merangkum fitur baru yang sudah tampak aktif di implementasi saat ini
 - User sudah bisa redeem tryout premium dengan koin.
 - Riwayat transaksi dompet sudah ditampilkan di UI.
 - Promo tryout sekarang ikut membaca saldo wallet user.
+- Pemecahan UI paket top up menjadi komponen `TopupPackages.vue` agar mudah dirawat.
+- Penambahan file `vercel.json` untuk rewrite SPA sehingga reload pada route seperti `/dompet` tidak menghasilkan 404 di Vercel.
 
 ## Catatan Implementasi Saat Ini
 
 - Integrasi dompet sudah jauh lebih maju dibanding dokumentasi overview sebelumnya.
 - Frontend dompet sudah siap untuk flow top up dan redeem, tetapi keberhasilan end-to-end tetap bergantung pada response backend dan webhook Midtrans.
 - Dokumentasi setup lokal Midtrans tersedia di `MIDTRANS_LOCAL_SETUP.md`.
+- Troubleshooting Private Network Access (PNA) untuk Snap saat development lokal tersedia di `MIDTRANS_LOCAL_SETUP.md` (Chrome flag atau alternatif HTTPS/ngrok).
 
 ## Tujuan Dokumen
 
