@@ -18,9 +18,9 @@ const replaceSubdomain = (origin, sourceSubdomain, targetSubdomain) => {
       // In local development, typically mapped by ports rather than subdomains, so fallback or adapt if needed.
       // E.g. user on 5173, admin on 5174.
       if (sourceSubdomain === 'user' && targetSubdomain === 'admin') {
-         if (url.port === '5173') url.port = '5174';
+        if (url.port === '5173') url.port = '5174';
       } else if (sourceSubdomain === 'admin' && targetSubdomain === 'user') {
-         if (url.port === '5174') url.port = '5173';
+        if (url.port === '5174') url.port = '5173';
       }
       return trimTrailingSlash(url.origin);
     }
@@ -127,7 +127,7 @@ export const redirectToAdminApp = (path = "/login") => {
 };
 
 export const buildUserGoogleLoginUrl = () => {
-  const loginUrl = new URL(`${USER_AUTH_API_BASE_URL}/auth/google/redirect`);
+  const loginUrl = new URL(`${USER_AUTH_API_BASE_URL}/google/redirect`);
 
   if (USER_APP_URL) {
     loginUrl.searchParams.set(
@@ -145,8 +145,8 @@ export const buildUserGoogleLoginUrl = () => {
 export const getGoogleCallbackSession = (searchParams) => {
   const user = parseUserPayload(
     searchParams.get("user") ||
-      searchParams.get("user_data") ||
-      searchParams.get("user_json")
+    searchParams.get("user_data") ||
+    searchParams.get("user_json")
   );
 
   return {
