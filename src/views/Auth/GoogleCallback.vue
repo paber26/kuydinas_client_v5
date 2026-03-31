@@ -7,15 +7,31 @@
 <script setup>
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
+import {
+  getGoogleCallbackSession,
+  saveAuthSession,
+  redirectToAdminApp,
+} from "../../utils/auth";
 
 const router = useRouter();
 
 onMounted(() => {
   const params = new URLSearchParams(window.location.search);
-  const token = params.get("token");
+  const { token, role, user, error } = getGoogleCallbackSession(params);
+
+  if (error) {
+    alert("Login gagal: " + error);
+    router.push("/login");
+    return;
+  }
 
   if (token) {
-    localStorage.setItem("token", token);
+    if (role === "admin") {
+      redirectToAdminApp();
+      return;
+    }
+
+    saveAuthSession({ token, role, user });
     router.push("/dashboard");
   } else {
     router.push("/login");
