@@ -292,9 +292,18 @@ const tryoutTagLabel = computed(() =>
   route.query.tag === "premium" ? "Paket Premium" : "Paket Gratis",
 );
 
-const promoMessage = `Halo teman-teman, aku baru ikut tryout ${tryoutTitle.value} di KuyDinas. Yuk ikut juga dan latihan bareng supaya persiapan makin matang.`;
-const instagramUrl = "https://www.instagram.com/";
-const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(promoMessage)}`;
+const infoIg = computed(() => route.query.info_ig || "");
+const infoWa = computed(() => route.query.info_wa || "");
+
+const promoMessage = computed(() => {
+  let msg = `Halo teman-teman, aku baru ikut tryout ${tryoutTitle.value} di KuyDinas. Yuk ikut juga dan latihan bareng supaya persiapan makin matang.`;
+  if (infoIg.value) msg += `\n\nLink Informasi/Postingan IG: ${infoIg.value}`;
+  if (infoWa.value) msg += `\nLink WhatsApp Penyelenggara: ${infoWa.value}`;
+  return msg;
+});
+
+const instagramUrl = computed(() => infoIg.value || "https://www.instagram.com/");
+const whatsappUrl = computed(() => `https://wa.me/?text=${encodeURIComponent(promoMessage.value)}`);
 
 const uploadSlots = reactive([
   createUploadSlot("follow-instagram", "Bukti follow Instagram"),
@@ -325,20 +334,20 @@ const duplicateMessage = ref("");
 const isSubmitting = ref(false);
 const submitError = ref("");
 
-const steps = [
+const steps = computed(() => [
   {
     id: "01",
     title: "Follow akun Instagram penyelenggara",
     description:
       "Tekan tombol di bawah untuk membuka Instagram. Setelah follow, siapkan screenshot sebagai bukti upload pertama.",
     actionLabel: "Buka Instagram",
-    action: () => window.open(instagramUrl, "_blank", "noopener,noreferrer"),
+    action: () => window.open(instagramUrl.value, "_blank", "noopener,noreferrer"),
   },
   {
     id: "02",
     title: "Salin informasi promo tryout",
     description:
-      "Gunakan teks promosi yang sudah disiapkan agar format share ke grup tetap konsisten.",
+      `Gunakan teks promosi yang sudah disiapkan agar format share ke grup tetap konsisten:\n\n"${promoMessage.value}"`,
     actionLabel: "Salin Teks Promosi",
     action: copyPromoMessage,
   },
@@ -348,7 +357,7 @@ const steps = [
     description:
       "Aplikasi web tidak bisa mengirim otomatis ke grup WhatsApp pribadi tanpa interaksi pengguna. Tombol berikut membuka WhatsApp dengan pesan siap kirim agar Anda bisa membagikannya ke 3 grup.",
     actionLabel: "Buka WhatsApp",
-    action: () => window.open(whatsappUrl, "_blank", "noopener,noreferrer"),
+    action: () => window.open(whatsappUrl.value, "_blank", "noopener,noreferrer"),
   },
   {
     id: "04",
@@ -356,7 +365,7 @@ const steps = [
     description:
       "Unggah 1 bukti follow Instagram dan 3 bukti share WhatsApp. Jika ada gambar yang sama, form akan menolaknya.",
   },
-];
+]);
 
 const uploadedCount = computed(
   () => uploadSlots.filter((slot) => Boolean(slot.file)).length,
@@ -471,7 +480,7 @@ async function createFileHash(file) {
 
 async function copyPromoMessage() {
   try {
-    await navigator.clipboard.writeText(promoMessage);
+    await navigator.clipboard.writeText(promoMessage.value);
   } catch (error) {
     console.error("Gagal menyalin teks promosi:", error);
   }

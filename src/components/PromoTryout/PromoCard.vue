@@ -102,6 +102,13 @@
         <dt class="text-slate-500">Tingkat</dt>
         <dd>{{ pkg.level }}</dd>
       </div>
+
+      <div class="flex justify-between" v-if="pkg.isFree && (pkg.free_start_date || pkg.free_valid_until)">
+        <dt class="text-slate-500">Masa Akses</dt>
+        <dd class="text-emerald-600 font-semibold text-right">
+          {{ formatTimeline(pkg.free_start_date, pkg.free_valid_until) }}
+        </dd>
+      </div>
     </dl>
 
     <!-- FOOTER -->
@@ -139,4 +146,14 @@ defineProps({
 });
 
 defineEmits(["select"]);
+
+const formatTimeline = (start, end) => {
+  if (!start && !end) return "Tanpa batas";
+  
+  const options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+  
+  const startStr = start ? new Date(start.replace(' ', 'T')).toLocaleDateString('id-ID', options).replace(/\./g, ':') : "Sekarang";
+  const endStr = end ? new Date(end.replace(' ', 'T')).toLocaleDateString('id-ID', options).replace(/\./g, ':') : "Seterusnya";
+  return `${startStr} - ${endStr}`;
+};
 </script>

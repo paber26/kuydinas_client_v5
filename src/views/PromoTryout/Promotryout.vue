@@ -75,6 +75,8 @@ const fetchTryouts = async () => {
         discount: Number(t.discount || 0),
         highlight: false,
         tag: t.tag,
+        free_start_date: t.free_start_date,
+        free_valid_until: t.free_valid_until,
       }))
       .sort((a, b) => Number(b.isFree) - Number(a.isFree));
   } catch (error) {
@@ -130,6 +132,28 @@ const filteredPackages = computed(() => {
 });
 
 const handleSelect = async (pkg) => {
+  if (pkg.isFree) {
+    const now = new Date();
+    
+    if (pkg.free_start_date) {
+      const startDate = new Date(pkg.free_start_date);
+      startDate.setHours(0, 0, 0, 0);
+      if (now < startDate) {
+        alert("Pemberitahuan: Paket tryout gratis ini belum dimulai. Silakan kembali pada tanggal " + startDate.toLocaleDateString("id-ID") + ".");
+        return;
+      }
+    }
+
+    if (pkg.free_valid_until) {
+      const endDate = new Date(pkg.free_valid_until);
+      endDate.setHours(23, 59, 59, 999);
+      if (now > endDate) {
+        alert("Pemberitahuan: Masa berlaku paket tryout gratis ini sudah berakhir.");
+        return;
+      }
+    }
+  }
+
   router.push({
     name: "panduan-tryout",
     params: { id: pkg.id },
@@ -137,6 +161,8 @@ const handleSelect = async (pkg) => {
       title: pkg.title,
       category: pkg.category,
       tag: pkg.tag || (pkg.isFree ? "free" : "premium"),
+      info_ig: pkg.info_ig || "",
+      info_wa: pkg.info_wa || "",
     },
   });
 };

@@ -24,6 +24,9 @@
           <li>• {{ promo.duration }} menit simulasi penuh SKD</li>
           <li>• {{ promo.question_count }} soal untuk latihan real test</li>
           <li>• Cocok untuk menambah progres dashboard belajarmu</li>
+          <li v-if="promo.type === 'free' && (promo.free_start_date || promo.free_valid_until)">
+            • Berlaku: {{ formatTimeline(promo.free_start_date, promo.free_valid_until) }}
+          </li>
         </ul>
 
         <router-link
@@ -128,5 +131,15 @@ function formatCurrency(value) {
     currency: "IDR",
     maximumFractionDigits: 0,
   }).format(Number.isFinite(numericValue) ? numericValue : 0);
+}
+
+function formatTimeline(start, end) {
+  if (!start && !end) return "Tanpa batas";
+  
+  const options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+  
+  const startStr = start ? new Date(start.replace(' ', 'T')).toLocaleDateString('id-ID', options).replace(/\./g, ':') : "Sekarang";
+  const endStr = end ? new Date(end.replace(' ', 'T')).toLocaleDateString('id-ID', options).replace(/\./g, ':') : "Seterusnya";
+  return `${startStr} - ${endStr}`;
 }
 </script>

@@ -1,1 +1,0 @@
-import{_ as t,d as o,g as r,b as c,e as n}from"./index-DMaDZ4yQ.js";const s={},a={class:"min-h-screen flex items-center justify-center bg-gray-100"};function _(i,f){const e=c("router-view");return n(),o("div",a,[r(e)])}const u=t(s,[["render",_]]);export{u as default};
