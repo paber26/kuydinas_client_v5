@@ -46,7 +46,11 @@
         <div class="text-center md:text-left mb-10 animate-fade-in-up opacity-0 delay-100" style="animation-fill-mode: forwards;">
           <!-- Logo for mobile only (since desktop has it on left) -->
           <div class="md:hidden w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path></svg>
+            <img
+              :src="logoKuydinas"
+              alt="KuyDinas"
+              class="w-12 h-12 object-contain"
+            />
           </div>
           <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">Selamat Datang 👋</h2>
           <p class="text-gray-500 mt-3 text-base">Silakan masuk ke akun Anda untuk melanjutkan</p>
@@ -134,12 +138,6 @@
           </div>
         </div>
 
-        <p class="text-sm text-center md:text-left mt-10 text-gray-600 animate-fade-in-up opacity-0 delay-700" style="animation-fill-mode: forwards;">
-          Belum punya akun?
-          <router-link to="/register" class="font-bold text-blue-600 hover:text-blue-700 transition-colors">
-            Daftar sekarang
-          </router-link>
-        </p>
       </div>
     </div>
   </div>
@@ -151,6 +149,7 @@ import { useRouter } from "vue-router";
 import api from "../../services/api";
 import { AUTH_ENDPOINTS } from "../../services/endpoints";
 import { buildUserGoogleLoginUrl, saveAuthSession } from "../../utils/auth";
+import logoKuydinas from "../../assets/logo-kuydinas.png";
 
 const router = useRouter();
 

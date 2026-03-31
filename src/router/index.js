@@ -94,11 +94,6 @@ const routes = [
         component: () => import("../views/Auth/Login.vue"),
       },
       {
-        path: "register",
-        name: "register",
-        component: () => import("../views/Auth/Register.vue"),
-      },
-      {
         path: "auth/google/callback",
         name: "google-callback",
         component: () => import("../views/Auth/GoogleCallback.vue"),
@@ -125,8 +120,8 @@ router.beforeEach((to, from, next) => {
     return next("/login");
   }
 
-  // if already logged in but accessing login/register
-  if (token && (to.path === "/login" || to.path === "/register")) {
+  // if already logged in but accessing login
+  if (token && to.path === "/login") {
     return next("/dashboard");
   }
 
