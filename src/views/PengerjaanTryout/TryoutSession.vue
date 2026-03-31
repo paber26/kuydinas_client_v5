@@ -219,9 +219,11 @@
               class="rounded-xl border border-slate-200 bg-white p-6"
             >
               <div class="prose prose-slate max-w-none">
-                <p class="leading-relaxed text-slate-800 font-medium" :style="{ fontSize: selectedFontSize }">
-                  {{ currentQuestion.text }}
-                </p>
+                <div
+                  class="leading-relaxed text-slate-800 font-medium whitespace-pre-line rich-content"
+                  :style="{ fontSize: selectedFontSize }"
+                  v-html="sanitizeRichText(currentQuestion.text)"
+                ></div>
                 <p
                   v-if="currentQuestion.allowMultiple"
                   class="mt-2 text-[11px] font-bold uppercase tracking-wider text-slate-400"
@@ -253,13 +255,12 @@
                     {{ option.label }}
                   </div>
 
-                  <p
-                    class="flex-1 pt-1.5 font-medium transition-colors"
+                  <div
+                    class="flex-1 pt-1.5 font-medium transition-colors whitespace-pre-line rich-content"
                     :class="isSelected(option.label) ? 'text-white' : 'text-slate-700 group-hover:text-slate-900'"
                     :style="{ fontSize: selectedFontSize }"
-                  >
-                    {{ option.text }}
-                  </p>
+                    v-html="sanitizeRichText(option.text)"
+                  ></div>
                 </label>
               </div>
 
@@ -718,6 +719,83 @@ function resolveCurrentIndex(sessionState, normalizedQuestions) {
   return Math.min(sessionState.currentIndex || 0, normalizedQuestions.length - 1);
 }
 
+function decodeIfEscapedHtml(input) {
+  const raw = String(input || "");
+
+  // If backend stored HTML as escaped entities (e.g. "&lt;figure&gt;"),
+  // v-html would still render it as text. Decode only when it looks escaped.
+  if (/&lt;[a-z!/]/i.test(raw) && !/<[a-z!/]/i.test(raw)) {
+    try {
+      const doc = new DOMParser().parseFromString(raw, "text/html");
+      return doc.documentElement.textContent || raw;
+    } catch {
+      return raw;
+    }
+  }
+
+  return raw;
+}
+
+function sanitizeRichText(html) {
+  if (!html) return "";
+
+  const rawHtml = decodeIfEscapedHtml(html);
+
+  // Minimal client-side sanitization for admin-authored content.
+  // Removes scripts/iframes and inline event handlers; strips unsafe URLs.
+  let doc;
+  try {
+    doc = new DOMParser().parseFromString(String(rawHtml), "text/html");
+  } catch {
+    return "";
+  }
+
+  doc
+    .querySelectorAll("script,style,iframe,object,embed,link,meta")
+    .forEach((node) => node.remove());
+
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_ELEMENT);
+  let node = walker.currentNode;
+
+  while (node) {
+    const el = node;
+
+    Array.from(el.attributes || []).forEach((attr) => {
+      const name = attr.name.toLowerCase();
+      const value = attr.value || "";
+
+      if (name.startsWith("on")) {
+        el.removeAttribute(attr.name);
+        return;
+      }
+
+      if ((name === "href" || name === "src") && /^\s*javascript:/i.test(value)) {
+        el.removeAttribute(attr.name);
+        return;
+      }
+
+      if (name === "style") {
+        if (el.tagName === "IMG") {
+          const kept = String(value)
+            .split(";")
+            .map((part) => part.trim())
+            .filter((part) => /^(width|height|aspect-ratio)\s*:/i.test(part))
+            .join("; ");
+
+          if (kept) el.setAttribute("style", kept);
+          else el.removeAttribute("style");
+        } else {
+          el.removeAttribute("style");
+        }
+      }
+    });
+
+    node = walker.nextNode();
+  }
+
+  return doc.body.innerHTML;
+}
+
 function parseRemainingSecondsFromEndTime(endTime, duration) {
   if (endTime) {
     const endTimestamp = new Date(endTime).getTime();
@@ -1031,3 +1109,15 @@ onBeforeUnmount(() => {
   clearTimeout(autosaveTimeout);
 });
 </script>
+
+<style scoped>
+.rich-content :deep(img) {
+  height: auto;
+  max-width: 100%;
+}
+
+.rich-content :deep(figure.image) {
+  margin: 0.75rem 0;
+  max-width: 100%;
+}
+</style>
