@@ -106,7 +106,7 @@
           <div class="animate-fade-in-up opacity-0 delay-500" style="animation-fill-mode: forwards;">
             <button
               :disabled="loading"
-              class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-blue-600/20 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 transform transition-all active:scale-[0.98] duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+              class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-blue-600/20 text-sm font-bold text-white bg-blue-600 bg-gradient-to-r from-blue-600 to-indigo-600 hover:bg-blue-700 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 transform transition-all active:scale-[0.98] duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {{ loading ? 'Memproses...' : 'Masuk Sekarang' }}
             </button>
