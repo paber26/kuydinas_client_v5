@@ -220,50 +220,6 @@
                   {{ regionError }}
                 </div>
 
-                <div class="sm:col-span-2">
-                  <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-                    <p class="text-xs font-semibold text-amber-800">Ubah Password</p>
-                    <p class="mt-1 text-[11px] text-amber-700">
-                      Isi bagian ini hanya jika kamu ingin mengganti password.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="sm:col-span-2">
-                  <label class="mb-1 block text-xs font-medium text-slate-600">Password Saat Ini</label>
-                  <input
-                    v-model="form.current_password"
-                    type="password"
-                    class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    placeholder="Masukkan password saat ini"
-                  />
-                  <p v-if="errors.current_password" class="mt-1 text-xs text-rose-600">
-                    {{ errors.current_password }}
-                  </p>
-                </div>
-
-                <div>
-                  <label class="mb-1 block text-xs font-medium text-slate-600">Password Baru</label>
-                  <input
-                    v-model="form.password"
-                    type="password"
-                    class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    placeholder="Masukkan password baru"
-                  />
-                  <p v-if="errors.password" class="mt-1 text-xs text-rose-600">
-                    {{ errors.password }}
-                  </p>
-                </div>
-
-                <div>
-                  <label class="mb-1 block text-xs font-medium text-slate-600">Konfirmasi Password Baru</label>
-                  <input
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    placeholder="Ulangi password baru"
-                  />
-                </div>
               </div>
 
               <div

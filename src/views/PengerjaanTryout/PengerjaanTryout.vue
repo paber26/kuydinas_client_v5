@@ -309,6 +309,57 @@
         </button>
       </div>
     </div>
+
+    <div
+      v-if="showProfileIncompleteModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+    >
+      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+        <div
+          class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-600"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v2.25m0 3.75h.008v.008H12v-.008Zm8.25-.75a8.25 8.25 0 1 1-16.5 0 8.25 8.25 0 0 1 16.5 0Z"
+            />
+          </svg>
+        </div>
+
+        <h2 class="text-center text-lg font-semibold text-slate-900">
+          Lengkapi Alamat Profil
+        </h2>
+        <p class="mt-2 text-center text-sm text-slate-600">
+          Sebelum mulai tryout, lengkapi dulu provinsi, kabupaten / kota, dan
+          kecamatan di profil kamu.
+        </p>
+
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+            @click="closeProfileIncompleteModal"
+          >
+            Nanti Saja
+          </button>
+          <button
+            type="button"
+            class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+            @click="goToProfileForAddress"
+          >
+            Lengkapi Profil
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -317,6 +368,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import api from "../../services/api";
 import { TRYOUT_ENDPOINTS } from "../../services/endpoints";
+import { getUserProfile } from "../../services/userService";
 
 const router = useRouter();
 const route = useRoute();
@@ -324,6 +376,8 @@ const route = useRoute();
 const loading = ref(true);
 const tryouts = ref([]);
 const showSuccessPopup = ref(false);
+const showProfileIncompleteModal = ref(false);
+const pendingProfileRedirectTryoutId = ref(null);
 
 const showEndConfirm = ref(false);
 const selectedTryout = ref(null);
@@ -349,11 +403,50 @@ const loadUserTryouts = async () => {
 const isInProgressStatus = (status) =>
   ["started", "in_progress", "ongoing"].includes(status);
 
-const handleContinue = (item) => {
-  if (isInProgressStatus(item.status)) {
-    router.push({ name: "sesi-tryout", params: { id: item.id } });
-  } else {
-    router.push({ name: "tryout-persiapan", params: { id: item.id } });
+const hasCompletedAddress = (user) =>
+  Boolean(user?.province_code && user?.regency_code && user?.district_code);
+
+const openProfileIncompleteModal = (item) => {
+  pendingProfileRedirectTryoutId.value = item.id;
+  showProfileIncompleteModal.value = true;
+};
+
+const closeProfileIncompleteModal = () => {
+  showProfileIncompleteModal.value = false;
+  pendingProfileRedirectTryoutId.value = null;
+};
+
+const goToProfileForAddress = () => {
+  const tryoutId = pendingProfileRedirectTryoutId.value;
+  showProfileIncompleteModal.value = false;
+
+  router.push({
+    name: "profil",
+    query: {
+      incomplete_address: "1",
+      ...(tryoutId ? { redirect_tryout_id: tryoutId } : {}),
+    },
+  });
+};
+
+const handleContinue = async (item) => {
+  try {
+    const response = await getUserProfile();
+    const user = response.data?.data?.user ?? {};
+
+    if (!hasCompletedAddress(user)) {
+      openProfileIncompleteModal(item);
+      return;
+    }
+
+    if (isInProgressStatus(item.status)) {
+      router.push({ name: "sesi-tryout", params: { id: item.id } });
+    } else {
+      router.push({ name: "tryout-persiapan", params: { id: item.id } });
+    }
+  } catch (error) {
+    console.error("Gagal memeriksa profil user:", error);
+    openProfileIncompleteModal(item);
   }
 };
 
