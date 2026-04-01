@@ -453,6 +453,10 @@ function syncRegionLabel(type, list, code) {
 function normalizeWilayahResponse(response) {
   const payload = response?.data
 
+  if (Array.isArray(payload?.data?.data)) {
+    return payload.data.data
+  }
+
   if (Array.isArray(payload?.data)) {
     return payload.data
   }
@@ -483,8 +487,6 @@ async function loadProvinces() {
 
   try {
     const response = await getProvinces()
-    console.log("Response provinces:", response)
-    console.log("Response provinces data:", response?.data)
     provinces.value = normalizeWilayahResponse(response)
     syncRegionLabel("province", provinces.value, form.value.province_code)
   } catch (error) {

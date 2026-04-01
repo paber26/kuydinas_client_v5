@@ -20,11 +20,11 @@ export const AUTH_ENDPOINTS = {
 };
 
 export const REGION_ENDPOINTS = {
-  provinces: "https://wilayah.id/api/provinces.json",
+  provinces: "/regions/provinces",
   regencies: (provinceCode) =>
-    `https://wilayah.id/api/regencies/${provinceCode}.json`,
+    `/regions/regencies/${provinceCode}`,
   districts: (regencyCode) =>
-    `https://wilayah.id/api/districts/${regencyCode}.json`,
+    `/regions/districts/${regencyCode}`,
 };
 
 export const TRYOUT_ENDPOINTS = {
