@@ -91,7 +91,7 @@ export const ADMIN_APP_URL = trimTrailingSlash(
   import.meta.env.VITE_ADMIN_APP_URL || replaceSubdomain(USER_APP_URL, USER_SUBDOMAIN, ADMIN_SUBDOMAIN)
 )
 
-export const GOOGLE_CALLBACK_PATH = "/auth/user/google/callback"
+export const GOOGLE_CALLBACK_PATH = "/user/auth/google/callback"
 
 export const saveAuthSession = ({ token, role, user }) => {
   if (!token) {
