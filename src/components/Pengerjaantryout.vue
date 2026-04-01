@@ -180,6 +180,13 @@
                 >
                   Tampilkan Hasil
                 </router-link>
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 font-medium text-emerald-700 hover:bg-emerald-100"
+                  @click="handleRanking(item)"
+                >
+                  Lihat Peringkat
+                </button>
               </div>
             </div>
           </article>
@@ -220,6 +227,9 @@
 
 <script setup>
 import { computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const activeTryouts = [
   {
@@ -318,5 +328,15 @@ const handleResult = (item) => {
   // TODO: ganti dengan navigasi ke halaman hasil tryout
   // misalnya: router.push({ name: 'tryoutResult', params: { id: item.id } })
   console.log("Lihat hasil:", item);
+};
+
+const handleRanking = (item) => {
+  router.push({
+    name: "peringkat",
+    query: {
+      tryoutId: item.id,
+      tryoutName: item.name,
+    },
+  });
 };
 </script>

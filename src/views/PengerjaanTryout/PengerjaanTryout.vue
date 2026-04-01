@@ -191,6 +191,13 @@
                   </router-link>
                   <button
                     type="button"
+                    class="inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 font-medium text-emerald-700 hover:bg-emerald-100 transition"
+                    @click="handleRanking(item)"
+                  >
+                    Lihat Peringkat
+                  </button>
+                  <button
+                    type="button"
                     class="inline-flex items-center justify-center rounded-xl bg-red-500 text-white px-4 py-2 font-semibold hover:bg-red-600 active:scale-95 transition"
                     @click="openEndConfirm(item)"
                     v-if="item.status !== 'completed'"
@@ -348,6 +355,16 @@ const handleContinue = (item) => {
   } else {
     router.push({ name: "tryout-persiapan", params: { id: item.id } });
   }
+};
+
+const handleRanking = (item) => {
+  router.push({
+    name: "peringkat",
+    query: {
+      tryoutId: item.id,
+      tryoutName: item.name,
+    },
+  });
 };
 
 const openEndConfirm = (item) => {
