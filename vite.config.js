@@ -8,5 +8,12 @@ export default defineConfig({
   server: {
     host: "127.0.0.1",
     port: 5173,
+    proxy: {
+      "/wilayah-api": {
+        target: "https://wilayah.id/api",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/wilayah-api/, ""),
+      },
+    },
   },
 });

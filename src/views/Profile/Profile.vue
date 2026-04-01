@@ -108,6 +108,119 @@
                 </div>
 
                 <div class="sm:col-span-2">
+                  <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                    <p class="text-xs font-semibold text-emerald-800">Kontak & Alamat</p>
+                    <p class="mt-1 text-[11px] text-emerald-700">
+                      Lengkapi nomor WhatsApp dan domisili kamu agar data profil lebih lengkap.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label class="mb-1 block text-xs font-medium text-slate-600">Nomor WhatsApp</label>
+                  <input
+                    v-model="form.whatsapp"
+                    type="tel"
+                    class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="Contoh: 081234567890"
+                  />
+                  <p v-if="errors.whatsapp" class="mt-1 text-xs text-rose-600">
+                    {{ errors.whatsapp }}
+                  </p>
+                </div>
+
+                <div>
+                  <label class="mb-1 block text-xs font-medium text-slate-600">Provinsi</label>
+                  <select
+                    v-model="form.province_code"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:bg-slate-100"
+                    :disabled="loadingRegions.provinces"
+                    @change="handleProvinceChange"
+                  >
+                    <option value="">
+                      {{ loadingRegions.provinces ? "Memuat provinsi..." : "Pilih provinsi" }}
+                    </option>
+                    <option
+                      v-for="province in provinces"
+                      :key="province.code"
+                      :value="province.code"
+                    >
+                      {{ province.name }}
+                    </option>
+                  </select>
+                  <p v-if="errors.province_code" class="mt-1 text-xs text-rose-600">
+                    {{ errors.province_code }}
+                  </p>
+                </div>
+
+                <div>
+                  <label class="mb-1 block text-xs font-medium text-slate-600">Kabupaten / Kota</label>
+                  <select
+                    v-model="form.regency_code"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:bg-slate-100"
+                    :disabled="loadingRegions.regencies || !form.province_code"
+                    @change="handleRegencyChange"
+                  >
+                    <option value="">
+                      {{
+                        !form.province_code
+                          ? "Pilih provinsi dulu"
+                          : loadingRegions.regencies
+                            ? "Memuat kabupaten..."
+                            : "Pilih kabupaten / kota"
+                      }}
+                    </option>
+                    <option
+                      v-for="regency in regencies"
+                      :key="regency.code"
+                      :value="regency.code"
+                    >
+                      {{ regency.name }}
+                    </option>
+                  </select>
+                  <p v-if="errors.regency_code" class="mt-1 text-xs text-rose-600">
+                    {{ errors.regency_code }}
+                  </p>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label class="mb-1 block text-xs font-medium text-slate-600">Kecamatan</label>
+                  <select
+                    v-model="form.district_code"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:bg-slate-100"
+                    :disabled="loadingRegions.districts || !form.regency_code"
+                    @change="handleDistrictChange"
+                  >
+                    <option value="">
+                      {{
+                        !form.regency_code
+                          ? "Pilih kabupaten / kota dulu"
+                          : loadingRegions.districts
+                            ? "Memuat kecamatan..."
+                            : "Pilih kecamatan"
+                      }}
+                    </option>
+                    <option
+                      v-for="district in districts"
+                      :key="district.code"
+                      :value="district.code"
+                    >
+                      {{ district.name }}
+                    </option>
+                  </select>
+                  <p v-if="errors.district_code" class="mt-1 text-xs text-rose-600">
+                    {{ errors.district_code }}
+                  </p>
+                </div>
+
+                <div
+                  v-if="regionError"
+                  class="sm:col-span-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800"
+                >
+                  {{ regionError }}
+                </div>
+
+                <div class="sm:col-span-2">
                   <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
                     <p class="text-xs font-semibold text-amber-800">Ubah Password</p>
                     <p class="mt-1 text-[11px] text-amber-700">
@@ -219,32 +332,61 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue"
-import { getUserProfile, updateUserProfile } from "../../services/userService"
+import {
+  getDistricts,
+  getProvinces,
+  getRegencies,
+  getUserProfile,
+  updateUserProfile
+} from "../../services/userService"
 
 const loading = ref(true)
 const saving = ref(false)
 const submitError = ref("")
 const showSuccessPopup = ref(false)
+const regionError = ref("")
 const profile = ref({
   id: null,
   name: "",
   email: "",
+  whatsapp: "",
   role: "user",
   coin_balance: 0,
   last_login: null,
   provider: null,
-  image: null
+  image: null,
+  province_code: "",
+  province_name: "",
+  regency_code: "",
+  regency_name: "",
+  district_code: "",
+  district_name: ""
 })
 
 const form = ref({
   name: "",
   email: "",
+  whatsapp: "",
+  province_code: "",
+  province_name: "",
+  regency_code: "",
+  regency_name: "",
+  district_code: "",
+  district_name: "",
   current_password: "",
   password: "",
   password_confirmation: ""
 })
 
 const errors = ref({})
+const provinces = ref([])
+const regencies = ref([])
+const districts = ref([])
+const loadingRegions = ref({
+  provinces: false,
+  regencies: false,
+  districts: false
+})
 
 const initials = computed(() => {
   const source = String(form.value.name || profile.value.name || "P")
@@ -262,20 +404,162 @@ function applyProfile(user) {
     id: user?.id ?? null,
     name: user?.name ?? "",
     email: user?.email ?? "",
+    whatsapp: user?.whatsapp ?? "",
     role: user?.role ?? "user",
     coin_balance: Number(user?.coin_balance ?? 0),
     last_login: user?.last_login ?? null,
     provider: user?.provider ?? null,
-    image: user?.image ?? null
+    image: user?.image ?? null,
+    province_code: user?.province_code ?? "",
+    province_name: user?.province_name ?? "",
+    regency_code: user?.regency_code ?? "",
+    regency_name: user?.regency_name ?? "",
+    district_code: user?.district_code ?? "",
+    district_name: user?.district_name ?? ""
   }
 
   form.value = {
     name: profile.value.name,
     email: profile.value.email,
+    whatsapp: profile.value.whatsapp,
+    province_code: profile.value.province_code,
+    province_name: profile.value.province_name,
+    regency_code: profile.value.regency_code,
+    regency_name: profile.value.regency_name,
+    district_code: profile.value.district_code,
+    district_name: profile.value.district_name,
     current_password: "",
     password: "",
     password_confirmation: ""
   }
+}
+
+function syncRegionLabel(type, list, code) {
+  const selected = list.find((item) => String(item.code) === String(code))
+
+  if (type === "province") {
+    form.value.province_name = selected?.name ?? ""
+  }
+
+  if (type === "regency") {
+    form.value.regency_name = selected?.name ?? ""
+  }
+
+  if (type === "district") {
+    form.value.district_name = selected?.name ?? ""
+  }
+}
+
+function normalizeWilayahResponse(response) {
+  const payload = response?.data
+
+  if (Array.isArray(payload?.data)) {
+    return payload.data
+  }
+
+  if (Array.isArray(payload)) {
+    return payload
+  }
+
+  return []
+}
+
+function resetRegencySelection() {
+  form.value.regency_code = ""
+  form.value.regency_name = ""
+  regencies.value = []
+  resetDistrictSelection()
+}
+
+function resetDistrictSelection() {
+  form.value.district_code = ""
+  form.value.district_name = ""
+  districts.value = []
+}
+
+async function loadProvinces() {
+  loadingRegions.value.provinces = true
+  regionError.value = ""
+
+  try {
+    const response = await getProvinces()
+    console.log("Response provinces:", response)
+    console.log("Response provinces data:", response?.data)
+    provinces.value = normalizeWilayahResponse(response)
+    syncRegionLabel("province", provinces.value, form.value.province_code)
+  } catch (error) {
+    console.error("Gagal memuat provinsi:", error)
+    regionError.value = "Daftar provinsi belum bisa dimuat dari layanan wilayah."
+  } finally {
+    loadingRegions.value.provinces = false
+  }
+}
+
+async function loadRegencies(provinceCode) {
+  if (!provinceCode) {
+    regencies.value = []
+    return
+  }
+
+  loadingRegions.value.regencies = true
+  regionError.value = ""
+
+  try {
+    const response = await getRegencies(provinceCode)
+    regencies.value = normalizeWilayahResponse(response)
+    syncRegionLabel("regency", regencies.value, form.value.regency_code)
+  } catch (error) {
+    console.error("Gagal memuat kabupaten/kota:", error)
+    regionError.value = "Daftar kabupaten / kota belum bisa dimuat."
+  } finally {
+    loadingRegions.value.regencies = false
+  }
+}
+
+async function loadDistricts(regencyCode) {
+  if (!regencyCode) {
+    districts.value = []
+    return
+  }
+
+  loadingRegions.value.districts = true
+  regionError.value = ""
+
+  try {
+    const response = await getDistricts(regencyCode)
+    districts.value = normalizeWilayahResponse(response)
+    syncRegionLabel("district", districts.value, form.value.district_code)
+  } catch (error) {
+    console.error("Gagal memuat kecamatan:", error)
+    regionError.value = "Daftar kecamatan belum bisa dimuat."
+  } finally {
+    loadingRegions.value.districts = false
+  }
+}
+
+async function handleProvinceChange() {
+  regionError.value = ""
+  syncRegionLabel("province", provinces.value, form.value.province_code)
+  resetRegencySelection()
+
+  if (form.value.province_code) {
+    await loadRegencies(form.value.province_code)
+  }
+}
+
+async function handleRegencyChange() {
+  regionError.value = ""
+  syncRegionLabel("regency", regencies.value, form.value.regency_code)
+  resetDistrictSelection()
+
+  if (form.value.regency_code) {
+    await loadDistricts(form.value.regency_code)
+  }
+}
+
+function handleDistrictChange() {
+  regionError.value = ""
+  syncRegionLabel("district", districts.value, form.value.district_code)
 }
 
 async function loadProfile() {
@@ -293,10 +577,21 @@ async function loadProfile() {
   }
 }
 
-function resetForm() {
+async function resetForm() {
   applyProfile(profile.value)
   errors.value = {}
   submitError.value = ""
+  regionError.value = ""
+
+  await loadProvinces()
+
+  if (form.value.province_code) {
+    await loadRegencies(form.value.province_code)
+  }
+
+  if (form.value.regency_code) {
+    await loadDistricts(form.value.regency_code)
+  }
 }
 
 async function handleSubmit() {
@@ -307,7 +602,14 @@ async function handleSubmit() {
   try {
     const payload = {
       name: form.value.name,
-      email: form.value.email
+      email: form.value.email,
+      whatsapp: form.value.whatsapp,
+      province_code: form.value.province_code || null,
+      province_name: form.value.province_name || null,
+      regency_code: form.value.regency_code || null,
+      regency_name: form.value.regency_name || null,
+      district_code: form.value.district_code || null,
+      district_name: form.value.district_name || null
     }
 
     if (form.value.password) {
@@ -371,7 +673,16 @@ function formatNumber(value) {
   return new Intl.NumberFormat("id-ID").format(numericValue)
 }
 
-onMounted(() => {
-  loadProfile()
+onMounted(async () => {
+  await loadProfile()
+  await loadProvinces()
+
+  if (form.value.province_code) {
+    await loadRegencies(form.value.province_code)
+  }
+
+  if (form.value.regency_code) {
+    await loadDistricts(form.value.regency_code)
+  }
 })
 </script>
