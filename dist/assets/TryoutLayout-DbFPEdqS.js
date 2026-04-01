@@ -1,1 +1,0 @@
-import{_ as o,d as t,g as r,b as s,e as c}from"./index-DdC2Lo-m.js";const n={},a={class:"min-h-screen bg-slate-50"};function _(i,d){const e=s("router-view");return c(),t("div",a,[r(e)])}const m=o(n,[["render",_]]);export{m as default};
