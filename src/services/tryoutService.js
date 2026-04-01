@@ -9,6 +9,10 @@ export const getTryoutList = () => {
   return api.get(TRYOUT_ENDPOINTS.list);
 };
 
+export const getTryoutDetail = (id) => {
+  return api.get(TRYOUT_ENDPOINTS.detail(id));
+};
+
 export const startTryout = (id) => {
   return api.post(TRYOUT_ENDPOINTS.start(id));
 };

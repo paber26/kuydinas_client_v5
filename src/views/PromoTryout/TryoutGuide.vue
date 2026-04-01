@@ -276,9 +276,9 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { registerTryout } from "../../services/tryoutService";
+import { registerTryout, getTryoutDetail } from "../../services/tryoutService";
 
 const route = useRoute();
 const router = useRouter();
@@ -292,8 +292,24 @@ const tryoutTagLabel = computed(() =>
   route.query.tag === "premium" ? "Paket Premium" : "Paket Gratis",
 );
 
-const infoIg = computed(() => route.query.info_ig || "");
-const infoWa = computed(() => route.query.info_wa || "");
+const fetchedInfoIg = ref("");
+const fetchedInfoWa = ref("");
+
+onMounted(async () => {
+  try {
+    const res = await getTryoutDetail(tryoutId.value);
+    const data = res.data?.data || res.data;
+    if (data) {
+      fetchedInfoIg.value = data.info_ig || "";
+      fetchedInfoWa.value = data.info_wa || "";
+    }
+  } catch (error) {
+    console.error("Gagal get info ig/wa dari API", error);
+  }
+});
+
+const infoIg = computed(() => fetchedInfoIg.value || route.query.info_ig || "");
+const infoWa = computed(() => fetchedInfoWa.value || route.query.info_wa || "");
 
 const promoMessage = computed(() => {
   let msg = `Halo teman-teman, aku baru ikut tryout ${tryoutTitle.value} di KuyDinas. Yuk ikut juga dan latihan bareng supaya persiapan makin matang.`;
@@ -303,7 +319,7 @@ const promoMessage = computed(() => {
 });
 
 const instagramUrl = computed(() => infoIg.value || "https://www.instagram.com/");
-const whatsappUrl = computed(() => `https://wa.me/?text=${encodeURIComponent(promoMessage.value)}`);
+const whatsappUrl = computed(() => infoWa.value || `https://wa.me/?text=${encodeURIComponent(promoMessage.value)}`);
 
 const uploadSlots = reactive([
   createUploadSlot("follow-instagram", "Bukti follow Instagram"),

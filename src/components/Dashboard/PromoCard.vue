@@ -119,6 +119,8 @@ const promoRoute = computed(() => {
       title: props.promo.title,
       category: "SKD",
       tag: props.promo.type || "premium",
+      info_ig: props.promo.info_ig || "",
+      info_wa: props.promo.info_wa || "",
     },
   };
 });
