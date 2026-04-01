@@ -122,7 +122,7 @@ export const redirectToAdminApp = (path = "/login") => {
 }
 
 export const buildUserGoogleLoginUrl = () => {
-  const loginUrl = new URL(`${USER_AUTH_API_BASE_URL}/google/redirect`)
+  const loginUrl = new URL(`${USER_AUTH_API_BASE_URL}/auth/google/redirect`)
 
   if (USER_APP_URL) {
     loginUrl.searchParams.set("redirect_url", `${USER_APP_URL}${GOOGLE_CALLBACK_PATH}`)
