@@ -37,7 +37,10 @@
 
         <div class="space-y-6">
           <StatsCard :stats="dashboard.stats" />
-          <PromoCard :promo="dashboard.promo_tryout" />
+          <PromoCard
+            :promos="dashboard.promo_tryouts"
+            :promo="dashboard.promo_tryout"
+          />
           <SupportCard />
         </div>
       </div>
@@ -75,6 +78,7 @@ const dashboard = ref({
   latest_tryout: null,
   learning_path: [],
   promo_tryout: null,
+  promo_tryouts: [],
 });
 
 async function loadDashboard() {

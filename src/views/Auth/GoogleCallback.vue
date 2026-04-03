@@ -32,7 +32,7 @@ onMounted(() => {
     }
 
     saveAuthSession({ token, role, user });
-    router.push("/dashboard");
+    router.push(user?.is_email_verified ? "/dashboard" : "/profil?verification=pending");
   } else {
     router.push("/login");
   }

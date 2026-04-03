@@ -58,6 +58,19 @@
       </router-link>
 
       <router-link
+        to="/tryouthots"
+        class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5"
+        :class="
+          isActive('/tryouthots')
+            ? 'bg-amber-300/80 text-slate-900 font-medium'
+            : 'text-slate-700 hover:bg-slate-100'
+        "
+      >
+        <span>🧠</span>
+        <span>Tryout HOTS</span>
+      </router-link>
+
+      <router-link
         to="/pengerjaantryout"
         class="w-full flex items-center gap-2 rounded-xl px-3 py-2.5"
         :class="
