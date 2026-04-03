@@ -26,7 +26,6 @@ import { useRouter } from "vue-router";
 import api from "../../services/api";
 import { TRYOUT_ENDPOINTS, WALLET_ENDPOINTS } from "../../services/endpoints";
 
-import PromoHeader from "../../components/PromoTryout/PromoHeader.vue";
 import PromoBanner from "../../components/PromoTryout/PromoBanner.vue";
 import PromoFilters from "../../components/PromoTryout/PromoFilters.vue";
 import PromoGrid from "../../components/PromoTryout/PromoGrid.vue";
@@ -36,13 +35,31 @@ const coins = ref(0);
 const router = useRouter();
 const tryoutPackages = ref([]);
 
+const isUnlimitedFreeTryout = (tryout) =>
+  tryout?.type === "free" &&
+  !tryout?.free_start_date &&
+  !tryout?.free_valid_until;
+
+const shouldShowPromoTryout = (tryout) => {
+  if (tryout?.type === "free") {
+    return isUnlimitedFreeTryout(tryout);
+  }
+
+  if (tryout?.type === "premium" && Number(tryout?.discount ?? 0) <= 0) {
+    return false;
+  }
+
+  return true;
+};
+
 const fetchTryouts = async () => {
   try {
-    const [tryoutsResponse, historyResponse, walletResponse] = await Promise.all([
-      api.get(TRYOUT_ENDPOINTS.list),
-      api.get(TRYOUT_ENDPOINTS.history),
-      api.get(WALLET_ENDPOINTS.wallet),
-    ]);
+    const [tryoutsResponse, historyResponse, walletResponse] =
+      await Promise.all([
+        api.get(TRYOUT_ENDPOINTS.list),
+        api.get(TRYOUT_ENDPOINTS.history),
+        api.get(WALLET_ENDPOINTS.wallet),
+      ]);
 
     // pastikan data berupa array (beberapa backend mengembalikan {data: [...]})
     const list = Array.isArray(tryoutsResponse.data)
@@ -61,6 +78,7 @@ const fetchTryouts = async () => {
 
     tryoutPackages.value = list
       .filter((t) => !registeredTryoutIds.has(String(t.id)))
+      .filter((t) => shouldShowPromoTryout(t))
       .map((t) => ({
         id: t.id,
         title: t.title,
@@ -134,12 +152,16 @@ const filteredPackages = computed(() => {
 const handleSelect = async (pkg) => {
   if (pkg.isFree) {
     const now = new Date();
-    
+
     if (pkg.free_start_date) {
       const startDate = new Date(pkg.free_start_date);
       startDate.setHours(0, 0, 0, 0);
       if (now < startDate) {
-        alert("Pemberitahuan: Paket tryout gratis ini belum dimulai. Silakan kembali pada tanggal " + startDate.toLocaleDateString("id-ID") + ".");
+        alert(
+          "Pemberitahuan: Paket tryout gratis ini belum dimulai. Silakan kembali pada tanggal " +
+            startDate.toLocaleDateString("id-ID") +
+            ".",
+        );
         return;
       }
     }
@@ -148,7 +170,9 @@ const handleSelect = async (pkg) => {
       const endDate = new Date(pkg.free_valid_until);
       endDate.setHours(23, 59, 59, 999);
       if (now > endDate) {
-        alert("Pemberitahuan: Masa berlaku paket tryout gratis ini sudah berakhir.");
+        alert(
+          "Pemberitahuan: Masa berlaku paket tryout gratis ini sudah berakhir.",
+        );
         return;
       }
     }

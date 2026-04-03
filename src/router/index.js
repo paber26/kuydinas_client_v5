@@ -31,6 +31,11 @@ const routes = [
         component: () => import("../views/PromoTryout/Promotryout.vue"),
       },
       {
+        path: "tryouthots",
+        name: "tryouthots",
+        component: () => import("../views/TryoutHots/TryoutHots.vue"),
+      },
+      {
         path: "promotryout/:id/panduan",
         name: "panduan-tryout",
         component: () => import("../views/PromoTryout/TryoutGuide.vue"),
@@ -94,6 +99,21 @@ const routes = [
         component: () => import("../views/Auth/Login.vue"),
       },
       {
+        path: "register",
+        name: "register",
+        component: () => import("../views/Auth/Register.vue"),
+      },
+      {
+        path: "forgot-password",
+        name: "forgot-password",
+        component: () => import("../views/Auth/ForgotPassword.vue"),
+      },
+      {
+        path: "reset-password",
+        name: "reset-password",
+        component: () => import("../views/Auth/ResetPassword.vue"),
+      },
+      {
         path: "auth/google/callback",
         name: "google-callback",
         component: () => import("../views/Auth/GoogleCallback.vue"),
@@ -114,14 +134,15 @@ const router = createRouter({
 // AUTH GUARD
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
+  const publicAuthPaths = ["/login", "/register", "/forgot-password", "/reset-password"];
 
   // if route requires auth but user not logged in
   if (to.meta.requiresAuth && !token) {
     return next("/login");
   }
 
-  // if already logged in but accessing login
-  if (token && to.path === "/login") {
+  // if already logged in but accessing auth pages
+  if (token && publicAuthPaths.includes(to.path)) {
     return next("/dashboard");
   }
 

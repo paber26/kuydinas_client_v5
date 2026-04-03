@@ -133,6 +133,16 @@
           <Flame class="h-5 w-5 text-slate-500" />
           <span>Promo Tryout</span>
         </RouterLink>
+
+        <RouterLink
+          to="/tryouthots"
+          @click="emitNavigate"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-700 transition hover:bg-slate-100"
+          active-class="bg-emerald-50 text-emerald-600 font-semibold"
+        >
+          <Brain class="h-5 w-5 text-slate-500" />
+          <span>Tryout HOTS</span>
+        </RouterLink>
       </div>
     </nav>
 
@@ -160,6 +170,7 @@ import {
   User,
   Wallet,
   Flame,
+  Brain,
   LogOut,
 } from "lucide-vue-next";
 
