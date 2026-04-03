@@ -1,0 +1,1 @@
+import{a as r,A as e}from"./endpoints-BvAIRkQI.js";const t=s=>r.post(e.user.register,s),a=s=>r.post(e.user.login,s),n=s=>r.post(e.user.forgotPassword,s),i=s=>r.post(e.user.resetPassword,s),u=()=>r.post(e.user.resendVerificationEmail);export{t as a,i as b,n as f,a as l,u as r};

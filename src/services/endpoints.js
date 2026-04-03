@@ -4,9 +4,12 @@ export const AUTH_ENDPOINTS = {
   user: {
     register: "/user/register",
     login: "/user/login",
+    forgotPassword: "/user/forgot-password",
+    resetPassword: "/user/reset-password",
     me: "/user/me",
     profile: "/user/profile",
     logout: "/user/logout",
+    resendVerificationEmail: "/user/email/verification-notification",
     googleRedirect: "/user/auth/google/redirect",
     googleCallback: "/user/auth/google/callback",
   },

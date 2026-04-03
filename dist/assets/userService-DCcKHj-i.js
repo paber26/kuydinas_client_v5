@@ -1,0 +1,1 @@
+import{a as t,A as s,R as r}from"./endpoints-BvAIRkQI.js";const i=()=>t.get(s.user.me),o=e=>t.put(s.user.profile,e),a=()=>t.get(r.provinces),c=e=>t.get(r.regencies(e)),g=e=>t.get(r.districts(e));export{a,c as b,g as c,i as g,o as u};

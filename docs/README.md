@@ -18,6 +18,10 @@ Fitur:
 - login user dengan kredensial biasa
 - register akun baru
 - login dengan Google
+- verifikasi email dari backend
+- kirim ulang email verifikasi dari halaman profil
+- reset password hanya untuk akun manual yang emailnya sudah terverifikasi
+- akun Google langsung dianggap verified dan diarahkan tetap login lewat Google
 - route guard berbasis token di `localStorage`
 - redirect otomatis ke dashboard jika user sudah login
 
