@@ -1,28 +1,38 @@
 <template>
   <div class="h-screen w-screen bg-slate-100 overflow-hidden">
-    <div class="flex h-full w-full flex-row-reverse">
-      <aside class="h-full w-[280px] bg-white border-l shadow-sm">
-        <div class="flex h-full flex-col overflow-y-auto">
-          <div class="p-4 sm:p-5">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-violet-600">
-                  Peserta: {{ participantName }}
-                </p>
-                <h1 class="mt-1 text-lg font-extrabold text-slate-900 line-clamp-1">
-                  {{ tryoutMeta.title }}
-                </h1>
+    <div class="flex h-full w-full flex-row-reverse transition-all duration-300">
+      <!-- Sidebar Backdrop (Mobile) -->
+      <div
+        v-if="isSidebarOpen"
+        class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+        @click="isSidebarOpen = false"
+      />
+
+      <aside
+        class="fixed inset-y-0 right-0 z-50 h-full w-[300px] bg-white border-l shadow-2xl transition-transform duration-300 lg:static lg:z-auto lg:h-full lg:w-[320px] lg:translate-x-0 lg:shadow-none"
+        :class="isSidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
+      >
+          <div class="flex h-full flex-col overflow-y-auto">
+            <div class="p-4 sm:p-5">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-violet-600">
+                    Peserta: {{ participantName }}
+                  </p>
+                  <h1 class="mt-1 text-lg font-extrabold text-slate-900 line-clamp-1">
+                    {{ tryoutMeta.title }}
+                  </h1>
+                </div>
+                <button
+                  type="button"
+                  class="rounded-xl bg-slate-100 p-2 text-slate-500 hover:bg-slate-200 lg:hidden transition-all active:scale-95"
+                  @click="isSidebarOpen = false"
+                >
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-              <button
-                type="button"
-                class="rounded-xl bg-slate-100 p-2 text-slate-500 hover:bg-slate-200 lg:hidden"
-                @click="() => {}"
-              >
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
 
             <div class="mt-4 flex flex-wrap gap-1.5 text-[11px] text-slate-500">
               <span class="rounded-lg bg-slate-100 px-2.5 py-1 font-medium">{{ questions.length }} soal</span>
@@ -82,48 +92,8 @@
         </div>
       </aside>
 
-      <main class="flex-1 h-full overflow-y-auto p-6">
+      <main class="flex-1 h-full overflow-y-auto p-4 sm:p-6">
         <div class="w-full">
-          <div v-if="resultSummary" class="mb-4 rounded-3xl border border-emerald-200 bg-white p-4 shadow-sm sm:p-6">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p class="text-xs font-bold uppercase tracking-widest text-emerald-600">Hasil Tryout</p>
-                <h2 class="mt-1 text-xl font-extrabold text-slate-900">Tryout selesai</h2>
-                <p class="mt-1 text-xs text-slate-500">Nilai diambil langsung dari backend.</p>
-              </div>
-
-              <button
-                type="button"
-                class="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-slate-700"
-                @click="goToTryoutList"
-              >
-                Kembali ke Tryout Saya
-              </button>
-            </div>
-
-            <div class="mt-5 grid border-t border-slate-100 pt-5 gap-3 sm:grid-cols-3">
-              <div class="rounded-2xl bg-emerald-50 p-4">
-                <p class="text-xs font-bold text-emerald-700">Skor</p>
-                <p class="mt-0.5 text-2xl font-black text-emerald-800">
-                  {{ resultSummary.score ?? "-" }}
-                </p>
-              </div>
-
-              <div class="rounded-2xl border border-slate-100 p-4">
-                <p class="text-xs font-bold text-slate-400">Peringkat</p>
-                <p class="mt-0.5 text-2xl font-black text-slate-900">
-                  {{ resultSummary.rank ?? "-" }}
-                </p>
-              </div>
-
-              <div class="rounded-2xl border border-slate-100 p-4">
-                <p class="text-xs font-bold text-slate-400">Jawaban Benar</p>
-                <p class="mt-0.5 text-2xl font-black text-slate-900">
-                  {{ resultSummary.correctAnswer ?? "-" }}
-                </p>
-              </div>
-            </div>
-          </div>
 
           <div
             v-if="isLoading"
@@ -148,13 +118,13 @@
             </button>
           </div>
 
-          <template v-else-if="!resultSummary">
+          <template v-else>
             <header class="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
               <div class="flex items-center gap-4">
                 <button
                   type="button"
-                  class="rounded-xl border border-slate-200 p-2.5 text-slate-500 hover:bg-white hover:shadow-sm lg:hidden"
-                  @click="() => {}"
+                  class="rounded-xl border border-slate-200 p-2.5 text-slate-500 hover:bg-white hover:shadow-sm lg:hidden transition-all active:scale-95"
+                  @click="isSidebarOpen = true"
                 >
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -191,7 +161,7 @@
 
               <div class="flex items-center gap-2">
                 <div
-                  class="flex items-center gap-2 rounded-xl border-2 border-rose-100 bg-rose-50/50 px-4 py-2 font-mono text-sm font-bold text-rose-600"
+                  class="flex items-center gap-2 rounded-xl border-2 border-rose-100 bg-rose-50/50 px-2.5 py-2 font-mono text-xs sm:text-sm font-extrabold text-rose-600"
                 >
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -205,7 +175,7 @@
                 </div>
                 <button
                   type="button"
-                  class="rounded-xl bg-rose-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:bg-rose-700 disabled:opacity-60"
+                  class="rounded-xl bg-rose-600 px-3.5 py-2.5 text-[11px] sm:text-xs font-extrabold text-white shadow-sm transition hover:bg-rose-700 disabled:opacity-60"
                   :disabled="isSubmitting"
                   @click="showEndConfirm = true"
                 >
@@ -290,12 +260,13 @@
                 </div>
 
                 <button
+                  v-if="!isLastQuestion"
                   type="button"
                   class="rounded-xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition active:scale-95 disabled:opacity-60"
                   :disabled="isSubmitting"
                   @click="nextQuestion"
                 >
-                  {{ isLastQuestion ? "Selesaikan" : "Selanjutnya" }}
+                  Selanjutnya
                 </button>
               </div>
             </section>
@@ -360,9 +331,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   autosaveTryout,
-  getMyRank,
   getRemainingTime,
-  getResult,
   startTryout,
   submitTryout,
 } from "../../services/tryoutService";
@@ -378,8 +347,12 @@ const remainingSeconds = ref(0);
 const isSubmitting = ref(false);
 const isLoading = ref(true);
 const loadError = ref("");
-const resultSummary = ref(null);
 const lastInteraction = ref(null);
+const isSidebarOpen = ref(false);
+
+function toggleSidebar() {
+  isSidebarOpen.value = !isSidebarOpen.value;
+}
 
 const fontSizes = [
   { label: "A", value: "16px" },
@@ -465,9 +438,7 @@ async function loadTryoutSession() {
     ensureQuestionVisited(currentIndex.value);
 
     if (normalized.registrationStatus === "completed" || normalized.finishedAt) {
-      resultSummary.value = await fetchResultSummary();
-      remainingSeconds.value = 0;
-      stopTimer();
+      router.replace({ path: `/pengerjaantryout/${route.params.id}/hasil` });
       return;
     }
 
@@ -866,7 +837,7 @@ function ensureQuestionVisited(index) {
 function startTimer() {
   stopTimer();
 
-  if (resultSummary.value) {
+  if (isLoading.value) {
     return;
   }
 
@@ -918,6 +889,7 @@ function getPaletteClass(index) {
 function goToQuestion(index) {
   currentIndex.value = index;
   ensureQuestionVisited(index);
+  isSidebarOpen.value = false;
   scheduleAutosave({ type: "navigate", questionId: questions.value[index]?.id ?? null });
 }
 
@@ -1009,42 +981,6 @@ function buildSessionStatePayload(interaction = {}) {
   return payload;
 }
 
-function normalizeResultSummary(payload) {
-  const source = payload?.data || payload || {};
-
-  return {
-    score: source.score ?? null,
-    rank: source.rank ?? null,
-    correctAnswer: source.correct_answer ?? source.correctAnswer ?? null,
-    finishedAt: source.finished_at ?? source.finishedAt ?? null,
-    answers: source.answers ?? {},
-  };
-}
-
-async function fetchResultSummary() {
-  const [resultResponse, rankResponse] = await Promise.allSettled([
-    getResult(route.params.id),
-    getMyRank(route.params.id),
-  ]);
-
-  let summary = {
-    score: null,
-    rank: null,
-    correctAnswer: null,
-    finishedAt: null,
-    answers: {},
-  };
-
-  if (resultResponse.status === "fulfilled") {
-    summary = normalizeResultSummary(resultResponse.value.data);
-  }
-
-  if (rankResponse.status === "fulfilled") {
-    summary.rank = rankResponse.value.data?.rank ?? rankResponse.value.data?.data?.rank ?? summary.rank;
-  }
-
-  return summary;
-}
 
 function goToTryoutList() {
   router.push({ name: "pengerjaantryout", query: { refresh: Date.now() } });
@@ -1072,15 +1008,14 @@ async function finishTryout() {
   clearTimeout(autosaveTimeout);
 
   try {
-    const response = await submitTryout(
+    await submitTryout(
       route.params.id,
       buildAnswersPayload(),
       buildSessionStatePayload({ type: "submit", questionId: currentQuestion.value?.id ?? null })
     );
 
-    const normalizedResponse = normalizeResultSummary(response.data);
-    resultSummary.value = normalizedResponse.rank !== null ? normalizedResponse : await fetchResultSummary();
     stopTimer();
+    router.replace({ path: `/pengerjaantryout/${route.params.id}/hasil` });
   } catch (error) {
     console.error("Submit tryout gagal:", error);
     loadError.value = error?.response?.data?.message || "Tryout belum bisa diselesaikan.";

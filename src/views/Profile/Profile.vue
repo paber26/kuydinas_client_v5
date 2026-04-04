@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-full bg-slate-50">
-    <div class="max-w-4xl mx-auto space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       <section class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
         <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Akun Saya</p>
         <h1 class="mt-1 text-xl font-semibold text-slate-800 sm:text-2xl">Profil Kamu</h1>
@@ -17,7 +17,7 @@
       </div>
 
       <template v-else>
-        <section class="grid gap-6 lg:grid-cols-3">
+        <section class="grid gap-6 lg:grid-cols-4">
           <article class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-1">
             <div class="flex items-center gap-4">
               <div
@@ -71,7 +71,7 @@
             </div>
           </article>
 
-          <article class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-2">
+          <article class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-3">
             <div class="flex items-center justify-between gap-3">
               <div>
                 <h2 class="text-sm font-semibold text-slate-800 sm:text-base">Edit Profil</h2>
